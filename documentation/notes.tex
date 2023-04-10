@@ -184,11 +184,9 @@ The considerations are merited as follows:
     \item Ultimately, this requirement is predicated on how the EU intends to utilize the device in their system. Will the user control this as
         a subsystem of another System or Standalone. Will the EU prefer manual or programmed control?
 \end{itemize}
-\textbf{Conclusion} Implementing a web-based api is the best approach. It is agnostic to future modification. 
-\subsubsection{EU and HE shall utilize a Web-based API running on the odroid}
-\textbf{Rationale:} \hyperref[sec:undefined_ui_req]{See Trade Study}.
-
-\subsubsection{The API shall be available post power-on requireing no user interaction}
+\textbf{Conclusion} Implementing just the python script would be the cheapest overall and is therefore the best option going forward considering time available.
+\subsubsection{EU and HE shall utilize a basic python library}
+\textbf{Rationale:} \hyperref[sec:undefined_ui_req]{See Quick Study}.
 
 \subsection{The odroid shall control the daughter boards within the VME backplane it's connected to}
 The VME backplane we're interested in using is \href{https://www.vectorelect.com/series-2151.html}{Vector Electronics and Tech Series 2151 Chassis.}
@@ -198,20 +196,9 @@ The VME backplane we're interested in using is \href{https://www.vectorelect.com
 %
 \newpage
 \section{Design and Implementation}
-\subsection{Terms}
-\underline{Flask:} Is a relatively tiny web framework that lets programmers make simple websites or web API's
-\underline{Direct Connection:} One device communicates to another over LAN using ethernet with no other devices connected. eg: Host PC to odroid.
-
-\subsection{Operational Plan}
-After the odroid fully boots, a flask server will be started using Ubuntu's built in services manager. This will occur without any user intervention.
-Following this, the flask web-server will host our API and shall be present on it's ethernet port via direct connection. 
-Afterwards, the user may request information about the state of the system or set system parameters. They may also elect to preserve their current parameters.
 
 \subsection{Operations}
 \begin{enumerate}
-    \item Ping the API/Webserver
-        The api responds with status 200, "Hello There"
-    \item Request api general info
     \item Enumerate connected boards
     \item Request voltages for a given board
     \item Request current for a given board

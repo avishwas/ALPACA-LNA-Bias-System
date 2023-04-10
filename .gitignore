@@ -127,3 +127,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+documentation/_minted-notes/
+documentation/notes.aux
+documentation/notes.fdb_latexmk
+documentation/notes.fls
+documentation/notes.out
+documentation/notes.pdf:Zone.Identifier
+documentation/notes.synctex.gz
+documentation/notes.toc
