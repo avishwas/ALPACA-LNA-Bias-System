@@ -7,6 +7,7 @@ ___
 ## General Information
 This repository contains the documentation and software for the VME cards designed for the Series 2151 VME backplane / enclosure. This repo shall be made available to our collaborators.
 
+*Instructions for using the ordoid and or code shall be found in the documentation folder.*
 <p>&nbsp</p>
 
 ### Hardware
@@ -42,7 +43,17 @@ Utilizes an Odroid-N2 as the computer/controller. Images and Digrams are sourced
 | 482  | 24       | GPIO. 24  | IN   | 0             | 35         | 36         |               | IN   | GPIO. 27  | 27       | 495     |
 | AIN3 | 25       | GPIO. 25  |      |               | 37         | 38         |               |      | GPIO. 28  | 28       | REF 1.8 |
 |      |          | GND       |      |               | 39         | 40         |               |      | GPIO. 29  | 29       | AIN2    |
+
+<p>&nbsp</p>
+
 ### Software
 ___
 The software shall consist of a simple wiring-pi based software
-library 
+library. The Python code shall utilize the Black styling standard. Users can program as normal and then invoke 'black' to style their code aftwerwards. 
+
+<p>&nbsp</p>
+
+
+### Commits
+___
+**Repository is an as is product going forward and will ignore pull requests.**
