@@ -17,12 +17,12 @@
 \title{Odroid-N2 Documentation}
 \author{Cody Roberson - Arizona State University}
 \maketitle
-\newpage 
+\newpage
 \tableofcontents
 \newpage
 \section{Initial Setup}
 \subsection{OS Image}
-Ubuntu Minimal 20.04 was downladed from the following page. 
+Ubuntu Minimal 20.04 was downladed from the following page.
 \href{https://wiki.odroid.com/getting_started/os_installation_guide#operating_systems_we_re_providing}{ODroid OS Installation Guide}
 
 The file was imaged onto a standard 16Gb Micro-SD Card and loaded into the Odroid-N2.
@@ -104,7 +104,7 @@ Some minor configuration was setup in
 \begin{verbatim}
     .jupyter/jupyter_lab_config.py
 \end{verbatim}
-the password was configured to be 
+the password was configured to be
 \begin{verbatim}
     odroid 
 \end{verbatim}
@@ -117,7 +117,7 @@ A hello world notebook was created to test that everything appeared to be in wor
 was indeed the case. $ e^{-i\omega t}* e^{i\pi/2} $ was plotted.
 \newpage
 \section{Board Control}
-(Now that the OS was configured, a complete SD Card image was taken.)\\
+ (Now that the OS was configured, a complete SD Card image was taken.)\\
 We referred to the documentation found here:
 \href{https://wiki.odroid.com/odroid-n2/application_note/gpio}{Android N2 Wiki}
 to enable and install the gpio related hw/sw such as SPI/I2C/UART.
@@ -141,11 +141,11 @@ At this point it, the odroid is development ready.
 
 
 \begin{itemize}
-    \item The term 'useability' refer to how complex the procedure is to run the system and the relative skill level required.
-    \item The term 'testability' shall refer to the complexity and skill needed to test elements of the system using the software. 
-    \item The 'EU' or End User shall be the end entity of which this product is delivered.
-    \item The 'HE' or Hardware Engineer shall be the hardware engineer Eric Weeks who will be designing the daughter boards of the VME backplane.
-    \item The 'SE' or Software Engineer shall be Cody Roberson. Whom shall provide the software and control scheme that the EU shall utilize.
+	\item The term 'useability' refer to how complex the procedure is to run the system and the relative skill level required.
+	\item The term 'testability' shall refer to the complexity and skill needed to test elements of the system using the software.
+	\item The 'EU' or End User shall be the end entity of which this product is delivered.
+	\item The 'HE' or Hardware Engineer shall be the hardware engineer Eric Weeks who will be designing the daughter boards of the VME backplane.
+	\item The 'SE' or Software Engineer shall be Cody Roberson. Whom shall provide the software and control scheme that the EU shall utilize.
 \end{itemize}
 
 
@@ -155,34 +155,34 @@ At this point it, the odroid is development ready.
 This is an {\color{red} \textbf{open requirement}}. Therefore several possibilites exist that will impact implementation.
 The EU could require that all EU-to-Odroid control take place:
 \begin{enumerate}
-    \item Through an Ethernet API
-    \item Through a \textless generic\textgreater \ serial bus command API
-    \item Directly use a UI running on the Odroid
-    \item Web UI hosted by the Odroid 
+	\item Through an Ethernet API
+	\item Through a \textless generic\textgreater \ serial bus command API
+	\item Directly use a UI running on the Odroid
+	\item Web UI hosted by the Odroid
 \end{enumerate}
 
 The considerations are merited as follows:
 \begin{itemize}
-    \item Cost, Useability
-    \begin{itemize}
+	\item Cost, Useability
+	      \begin{itemize}
 
-        \item The cheapest solution for the SE would be a dead simple python script that haa functions which
-            are used to control I2C devices. Its the most adaptable as well but is not very useable. This could
-            make testing slow
-        \item A API over ethernet would be the second cheapest solution. Its a python script that will listen for
-            requests and make the appropriate function calls. The code can still be highly modifiable since its a small step
-            up from the previous option. The EU can implement their own code to run on the odroid or a host pc which makes requests to the api.
-        \item A UI on the odroid would increase complexity and start to get relatively expensive. It could take the form of a 
-            Terminal Interface or a Web Interface or GUI. All of which would need to be implemented. 
-            A desktop may need to be installed as well. Useability would be very high however, modifiablility would nontrivially decrease. Testability
-            would be somewhat easier however, debugging would be costlier taking into account reduced modifiability.
+		      \item The cheapest solution for the SE would be a dead simple python script that haa functions which
+		            are used to control I2C devices. Its the most adaptable as well but is not very useable. This could
+		            make testing slow
+		      \item A API over ethernet would be the second cheapest solution. Its a python script that will listen for
+		            requests and make the appropriate function calls. The code can still be highly modifiable since its a small step
+		            up from the previous option. The EU can implement their own code to run on the odroid or a host pc which makes requests to the api.
+		      \item A UI on the odroid would increase complexity and start to get relatively expensive. It could take the form of a
+		            Terminal Interface or a Web Interface or GUI. All of which would need to be implemented.
+		            A desktop may need to be installed as well. Useability would be very high however, modifiablility would nontrivially decrease. Testability
+		            would be somewhat easier however, debugging would be costlier taking into account reduced modifiability.
 
-    \end{itemize}
-    \item Ease of use for the HE to test his designs with. It should be something simple, robust, and quick. It should also provide some
-        dianostic utility that removes code errors as a factor.
- 
-    \item Ultimately, this requirement is predicated on how the EU intends to utilize the device in their system. Will the user control this as
-        a subsystem of another System or Standalone. Will the EU prefer manual or programmed control?
+	      \end{itemize}
+	\item Ease of use for the HE to test his designs with. It should be something simple, robust, and quick. It should also provide some
+	      dianostic utility that removes code errors as a factor.
+
+	\item Ultimately, this requirement is predicated on how the EU intends to utilize the device in their system. Will the user control this as
+	      a subsystem of another System or Standalone. Will the EU prefer manual or programmed control?
 \end{itemize}
 \textbf{Conclusion} Implementing just the python script would be the cheapest overall and is therefore the best option going forward considering time available.
 \subsubsection{EU and HE shall utilize a basic python library}
@@ -199,18 +199,20 @@ The VME backplane we're interested in using is \href{https://www.vectorelect.com
 
 \subsection{Operations}
 \begin{enumerate}
-    \item Enumerate connected boards
-    \item Request voltages for a given board
-    \item Request current for a given board
-    \item Set voltage for a given board
-    \item Set currnet for a given board
-    \item set a wiper for a given board
-    \item get a wiper for a given board
-    \item save config to given file
-    \item load config from a given file
-    \item get all available data from all of the boards
+	\item Enumerate connected boards
+	\item Request voltages for a given board
+	\item Request current for a given board
+	\item Set voltage for a given board
+	\item Set currnet for a given board
+	\item set a wiper for a given board
+	\item get a wiper for a given board
+	\item save config to given file
+	\item load config from a given file
+	\item get all available data from all of the boards
 \end{enumerate}
 
 \newpage
 \section{Verification and Validation}
+some changes etc...
+now its time to get rea
 \end{document}
