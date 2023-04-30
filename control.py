@@ -1,6 +1,6 @@
 """
 :author: Cody Roberson (carobers@asu.edu)
-:date: 04/24/2023
+:date: 04/30/2023
 :descrption: Controls / Tests the ALPACA bias boards designed by Eric W.
 :revisions:
     0.1 Initial implementation of skeleton and operations
@@ -15,27 +15,9 @@ logging.basicConfig(format=__LOGGINGFORMAT, level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
-class BiasBoard:
-    def __init__(self) -> None:
-        self.__repeaterDevId = 0
-        fd = wp.wiringPiI2CSetup(self.__repeaterDevId)
-
-    def c_board(self, address: int):
-        # connect to address
-        pass
-
-    def dc_board(self, address: int):
-        # disconnect board
-        pass
-
-    def set_wiper(self, address: int):
-        pass
-
-    def read_current(self):
-        pass
-
-    def read_voltage(self):
-        pass
+def begin_comms(iic_address: int = 1):
+    # connect to address
+    pass
 
 
 if __name__ == "__main__":
