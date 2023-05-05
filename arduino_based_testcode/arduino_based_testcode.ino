@@ -16,7 +16,7 @@
  *    Updated to utilize the LTC4302-A ii2 bus repeater. It is assumed that all code needs to communicate through the LTC.
  *    User needs to supply the LTC Address for each command. 
  *  2023-05-05
- *    Updated descriptions, Uo
+ *    Updated header and modified code to reflect "ALPACA v2.0 rev2 Test Plan" document revison 2.1
  *   
  *    
  *  
@@ -27,54 +27,59 @@
 #include "TuiConsole.h"
 #include <Adafruit_INA219.h>
 #include <Wire.h>
-#define SW_VERSION_NUMBER "2."
+#define SW_VERSION_NUMBER "0.2"
 
-Adafruit_INA219 ina219;
+
+// *********** I2C DEVICE ADDRESSES *****************
+#define __DIGITALPOT_1_I2C_ADDR  0b0101111
+#define __DIGITALPOT_2_I2C_ADDR  0b0100011
+#define __I2C_REPEATER_I2C_ADDR  0b1100000
+#define __IO_EXPANDER_I2C_ADDR   0b0100000
+#define __CURR_SENSE_1_I2C_ADDR  0b1001000 
+
+// *********** I2C DEVICE COMMANDS *****************
+#define __AD5144_CMD_WRITE_RDAC          0b00010000
+#define __LTC4302_CMD_CONNECT_CARD       0b11100000
+#define __LTC4302_CMD_DISCONNECT_CARD    0b01100000
+
+// ************ OTHER DEFAULT PARAMETERS ******************
+
+
+
+// Forward declarations telling the compiler that the code exists, but at the end
+int setWiper(uint8_t dpot_i2c_addr, uint8_t wiper, uint8_t val);
+
+// send the 'connect bus' command to the repeater
+// expects address to be between 0 and 31
+int connect_i2c_bus(uint8_t address){
+  Wire.beginTransmission(__I2C_REPEATER_I2C_ADDR + address); 
+  Wire.write(__LTC4302_CMD_CONNECT_CARD); //Connect IIC Bus
+  return Wire.endTransmission();
+}
+
+// send the 'disconnect bus' command to the repeater
+int disconnect_i2c_bus(uint8_t address){
+  Wire.beginTransmission(__I2C_REPEATER_I2C_ADDR + address); 
+  Wire.write(__LTC4302_CMD_DISCONNECT_CARD);
+  return Wire.endTransmission();
+}
+
+//global variables
+uint16_t IO_EXPANDER_PINSTATE = 0;
+Adafruit_INA219 currsense_1(__CURR_SENSE_1_I2C_ADDR);
 TuiConsole *cons;
 
-/**  spec'd from AD5144 datasheet
- * SEE: https://www.analog.com/media/en/technical-documentation/data-sheets/AD5124_5144_5144A.pdf
- **/
 
-#define AD5144_I2C_ADDR 0b0101111 //ADDR 0 -> GND   ADDR 1 -> GND (AAD5144 DATASHEET)
-#define AD5144_CMD_WRITE_RDAC 0b00010000 //offset +1 for each RDAC register
-#define DEFAULT_POT_WIPER 0
-
-#define MIN_CURR_TOLERANCE 0.001 //minimum acceptable difference between desired and realized bias current in AMPS
-#define MIN_VOLT_TOLERANCE 0.010 //minimum acceptable difference between desired and realized bias current
-
-
-int setWiper(uint8_t wiper, uint8_t val);
-void printCV();
-float getLoadV();
-float getCurrent();
-
-
-int connect_i2c_bus(uint8_t address){
-  Wire.beginTransmission(address); 
-  Wire.write(0b11100000); //Connect IIC Bus
-  return Wire.endTransmission();
-}
-int disconnect_i2c_bus(uint8_t address){
-  Wire.beginTransmission(address); 
-  Wire.write(0b01100000); //Connect IIC Bus
-  return Wire.endTransmission();
-}
 void setup(){
     cons = new TuiConsole(&Serial, 9600); //Setup Serial Console
+    Wire.begin(); //start/setup i2c arduino interface
+}
 
-    // Toggle () pin
-    pinMode(2, OUTPUT);
-    digitalWrite(2, HIGH);
-    
-    // Toggle () pin
-    pinMode(3, OUTPUT);
-    digitalWrite(3, HIGH);
-
-    Wire.begin(); //start I2C bus
-    ina219.begin(); //Default current/voltage sensor init
-    
-    setWiper(DEFAULT_POT_WIPER, 0);
+int setExpander(int pin, int state){
+  IO_EXPANDER_PINSTATE ^= (-state ^ IO_EXPANDER_PINSTATE) & (1 << pin);
+  Wire.beginTransmission(__IO_EXPANDER_I2C_ADDR);
+  Wire.write(IO_EXPANDER_PINSTATE);
+  return Wire.endTransmission();
 }
 
 void loop(){
@@ -82,121 +87,82 @@ void loop(){
         Serial.read();
     
     Serial.println("(built: " + String(__DATE__) + "_" + String(__TIME__) + "_v" + SW_VERSION_NUMBER + "\r\n");
-    Serial.println("Select Option:\r\n1. Read Voltage(V),Current(mA)\r\n2. Set Current\r\n3. Set Voltage\r\n4. Test LTC4302");
+    Serial.println("Select Option:\r\n      1. begin_comms\r\n      2. en_dpots\r\n      3. en_v1\r\n      4. sweep_wiper\r\n      5. set_wiper\r\n      6. get_iv\r\n      7. end_comms\r\n    ");
     int cmd = cons->getInt("\r\noption: ");
     int wiper = 0, wiperval = 0, status = -1;
-    float cur = 0, vol = 0; //desired current
+    float cur = 0, vol = 0;
     int addr = 0;
-
-    switch (cmd)
+    double shuntvoltage = 0;
+    double busvoltage = 0;
+    double current_mA = 0;
+    switch(cmd)
     {
-    case 1: // REad out Voltage, current
-        addr = cons->getInt("I2C Repeater Address?");
-        connect_i2c_bus(addr);
-        printCV();
-        disconnect_i2c_bus(addr);
-        break;
-    case 2: //set and keep current. 
-        /**
-         * This will probably have to be it's own loop until broken out by user input
-         *  current seaking algorithm....
-         *  Basically need to set a wiper value, check the current and adjust accordingly
-         *  S1, should set wiper to _, to represent the minumum current
-         *  S2. climb up/down the wiper value until we are within some tolerance of the desired 'Current' value
-         *  S3. break out
-         * 
-         */
-        addr = cons->getInt("I2C Repeater Address?");
-        connect_i2c_bus(addr);
-        cur = (float) cons->getDouble("current (mA): ");
-        setWiper(DEFAULT_POT_WIPER, 0); //START AT MIN VAL
-        Serial.println("\r\n");
-        for (int i = 0; i < 256; i++){
-            float x = 0;
-            status = setWiper(DEFAULT_POT_WIPER, i);
-            x = getCurrent();
+      case 1: //begin_comms
+        addr = cons->getInt("iic_address?");
+        if (connect_i2c_bus(addr) == 0){
+          if (setExpander(0, HIGH) != 0){
+            Serial.println("I2C Error: Couldn't command IO expander");
+            return;
+          } else {
+            if (! currsense_1.begin()) {
+              Serial.println("Failed to find INA219 chip");
+            }
+          }
 
-            if (status == 0){
-                Serial.println("I=" + String(x) +"\r");
-                if (abs(cur-x) <= MIN_CURR_TOLERANCE){
-                    Serial.println("\r\nfound setting, diff=" + String(abs(cur-x)) + "mA measured=" + String(x) +  " mA; wiper=" + String(i) + "\r\n");
-                    break;
-                }
-            }
-            
-            delay(100);
-            //break out of this thing and return to menu if anything is sent over serial
-            if(Serial.available() > 0){
-                disconnect_i2c_bus(addr);
-                return;
-            }
-        
+        } else {
+          Serial.println("I2c Error: LTC4302, Couldn't tell it to connect the bus");
+        }
+        break;
+      case 2: //en_dpots
+        if (setExpander(0, HIGH) != 0){
+          Serial.println("I2C Error: Couldn't command IO expander");
+        }
+        break;
+      case 3: //enable v1
+        if (setExpander(1, HIGH) != 0){
+          Serial.println("I2C Error: Couldn't command IO expander");
+        }
+        break;
+      case 4: //sweep wiper ( sweep digital pot 1 wiper 1)
+        cons->getInt("To stop, press any key / press enter\r\npress enter to begin");
+        while(1){
+          setWiper(__DIGITALPOT_1_I2C_ADDR, 0, wiperval);
+          delay(10);
+          wiperval++;
+
+          if (wiperval == 255)
+            wiperval=0;
+          
+          if(Serial.available() > 0)
+            return;
             
         }
-        disconnect_i2c_bus(addr);
         break;
-    
-    case 3: //set and keep voltage
-        addr = cons->getInt("I2C Repeater Address?");
-        connect_i2c_bus(addr);
-        vol = (float) cons->getDouble("voltage (V): ");
-        setWiper(DEFAULT_POT_WIPER, 0); //START AT MIN VAL
-        Serial.println("\r\n");
-        for (int i = 0; i < 256; i++){
-            float x = 0;
-            status = setWiper(DEFAULT_POT_WIPER, i);
-            x = getLoadV();
-
-            if (status == 0){
-                Serial.println("V=" + String(x) +"\r");
-                if (abs(vol-x) <= MIN_VOLT_TOLERANCE){
-                    Serial.println("\r\nfound setting, diff=" + String(abs(vol-x)) + "V measured=" + String(x) +  " V; wiper=" + String(i) + "\r\n");
-                    break;
-                }
-            }
-            
-            delay(100);
-            //break out of this thing and return to menu if anything is sent over serial
-            if(Serial.available() > 0){
-                disconnect_i2c_bus(addr);
-                return;
-            }
-        
-            
-        }
-        disconnect_i2c_bus(addr);
+      case 5: //set_wiper (digital pot 1 wiper 1)
+        wiperval = cons->getInt("0 to 255") & 0xFF; //get number and force it to be 255 or less
+        setWiper(__DIGITALPOT_1_I2C_ADDR, 0, wiperval);
         break;
-    case 4:
-      addr = cons->getInt("I2C Repeater Address?");
-
-      Serial.println("Test to connect i2c bus");
-      status = connect_i2c_bus(addr);
-      if (status != 0){
-        Serial.println("FAIL, CODE=" + String(status));
-      } else {
-        Serial.println("SUCCESS");
-      }
       
-      Serial.println("Test to d/c i2c bus");
-      status = disconnect_i2c_bus(addr);
-      if (status != 0){
-        Serial.println("FAIL, CODE=" + String(status));
-      } else {
-        Serial.println("SUCCESS");
-      }
-      break;
-    default:
-        Serial.println("\r\n");
+      case 6: // get v/i from INA219
+        shuntvoltage = currsense_1.getShuntVoltage_mV();
+        busvoltage = currsense_1.getBusVoltage_V();
+        current_mA = currsense_1.getCurrent_mA();
+
+        Serial.println("current (mA): " + String(current_mA));
+        Serial.print("Bus Voltage (V):   "); Serial.println(busvoltage);
+        Serial.print("Shunt Voltage (mV): "); Serial.println(shuntvoltage); 
+        Serial.print("v_drop (mV): "); Serial.println((busvoltage-(shuntvoltage/1000))); 
         break;
     }
 
+
 }
 
-int setWiper(uint8_t wiper, uint8_t val){
+int setWiper(uint8_t dpot_i2c_addr, uint8_t wiper, uint8_t val){
     int status = 0;
     
-    Wire.beginTransmission(AD5144_I2C_ADDR); 
-    Wire.write(AD5144_CMD_WRITE_RDAC + wiper); //Write to wiper/RDAC1
+    Wire.beginTransmission(dpot_i2c_addr); 
+    Wire.write(__AD5144_CMD_WRITE_RDAC + wiper); //Write to wiper/RDAC1
     Wire.write(val); //write value to chip
     
     status = Wire.endTransmission();
@@ -207,22 +173,4 @@ int setWiper(uint8_t wiper, uint8_t val){
     
 }
 
-float getCurrent(){
-    return ina219.getCurrent_mA();
-}
 
-float getLoadV(){
-    float shuntvoltage = 0,
-    busvoltage = 0,
-    loadvoltage = 0;
-
-    shuntvoltage = ina219.getShuntVoltage_mV();
-    busvoltage = ina219.getBusVoltage_V();
-    loadvoltage = (busvoltage + (shuntvoltage / 1000));
-    return loadvoltage;
-}
-
-// Print voltage,current in volts,miliAmp\n format
-void printCV(){
-    Serial.println("\r\n" + String(getLoadV()) + "," + String(getCurrent()) + "\r\n");
-}
