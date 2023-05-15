@@ -237,7 +237,7 @@ void loop()
   case 11: //init the rest of the INA219s
   for (int i = 1; i < 8; i++)
     currsense[i] = new Adafruit_INA219(__CURR_SENSE_BASE_I2C_ADDR+i);
-    break;
+  break;
 
   case 12: //get I+V reading
     ina = cons->getInt("which Current Senese Chip (1-8)? ");
@@ -259,7 +259,7 @@ void loop()
     Serial.println(busvoltage);
     Serial.print("Shunt Voltage (mV): ");
     Serial.println(shuntvoltage);
-    
+    break;
   case 99:
     Wire.beginTransmission(__IO_EXPANDER_I2C_ADDR);
     Wire.write(0xFF);
