@@ -70,21 +70,8 @@ int disconnect_i2c_bus(uint8_t address)
 // global variables
 uint16_t IO_EXPANDER_PINSTATE = 0;
 int current_LTC_addr = 0;
-Adafruit_INA219 currsense_1(__CURR_SENSE_BASE_I2C_ADDR);
-Adafruit_INA219 currsense_2(__CURR_SENSE_BASE_I2C_ADDR + 1);
-Adafruit_INA219 currsense_3(__CURR_SENSE_BASE_I2C_ADDR + 2);
-Adafruit_INA219 currsense_4(__CURR_SENSE_BASE_I2C_ADDR + 3);
-Adafruit_INA219 currsense_5(__CURR_SENSE_BASE_I2C_ADDR + 4);
-Adafruit_INA219 currsense_6(__CURR_SENSE_BASE_I2C_ADDR + 5);
-Adafruit_INA219 currsense_7(__CURR_SENSE_BASE_I2C_ADDR + 6);
-Adafruit_INA219 currsense_8(__CURR_SENSE_BASE_I2C_ADDR + 7);
+Adafruit_INA219 *currsense[8];
 TuiConsole *cons;
-
-void setup()
-{
-  cons = new TuiConsole(&Serial, 9600); // Setup Serial Console
-  Wire.begin();                         // start/setup i2c arduino interface
-}
 
 int setExpander(int pin, int state)
 {
@@ -95,6 +82,15 @@ int setExpander(int pin, int state)
   return Wire.endTransmission();
 }
 
+void setup()
+{
+  cons = new TuiConsole(&Serial, 9600); // Setup Serial Console
+  Wire.begin();                         // start/setup i2c arduino interface
+
+  //initialize current sensor 1
+  currsense[0] = new Adafruit_INA219(__CURR_SENSE_BASE_I2C_ADDR);
+}
+
 void loop()
 {
   while (Serial.available() > 0)
@@ -102,9 +98,10 @@ void loop()
 
   Serial.println("\r\nALPACA BIAS BOARD TEST CODE (built: " + String(__DATE__) + "_" + String(__TIME__) + "_v" + SW_VERSION_NUMBER + ")\r\n");
   Serial.println("Select Option:\r\n     1. begin comms\r\n      2. en dpots\r\n      3. en v1\r\n      4. sweep wiper 1\r\n      5. set wiper 1\r\n      6. get I+V 1\r\n            7. end_comms\r\n      8. set io expander pin ( numbered 0 - n )\r\n      9. set wiper\r\n      10. sweep wiper\r\n");
+  Serial.println("      11. Initialize INA219s (2-8)\r\n      12. get I+V");
   Serial.println("      99. set all expander1 pins high\r\n      100. set all expander1 pins low\r\n");
   int cmd = cons->getInt("\r\noption: ");
-  int wiper = 0, wiperval = 0, status = -1, pot = 0, pin = 0, state = 0;
+  int wiper = 0, wiperval = 0, status = -1, pot = 0, pin = 0, state = 0, ina = 0;
   float cur = 0, vol = 0;
   int addr = 0;
   double shuntvoltage = 0;
@@ -119,9 +116,9 @@ void loop()
       current_LTC_addr = addr;
       status = setExpander(0, LOW);
       Serial.println("expander status = " + String(status));
-      if (!currsense_1.begin())
+      if (!currsense[0]->begin())
       {
-        Serial.println("Failed to find INA219 chip");
+        Serial.println("Failed to find INA219 chip 1");
       }
     }
     else
@@ -159,9 +156,9 @@ void loop()
     break;
 
   case 6: // get v/i from INA219-1
-    shuntvoltage = currsense_1.getShuntVoltage_mV();
-    busvoltage = currsense_1.getBusVoltage_V();
-    current_mA = currsense_1.getCurrent_mA();
+    shuntvoltage = currsense[0]->getShuntVoltage_mV();
+    busvoltage = currsense[0]->getBusVoltage_V();
+    current_mA = currsense[0]->getCurrent_mA();
 
     Serial.println("current (mA): " + String(current_mA / 100));
     Serial.print("Bus Voltage (V):   ");
@@ -237,6 +234,32 @@ void loop()
         return;
     }
     break;
+  case 11: //init the rest of the INA219s
+  for (int i = 1; i < 8; i++)
+    currsense[i] = new Adafruit_INA219(__CURR_SENSE_BASE_I2C_ADDR+i);
+    break;
+
+  case 12: //get I+V reading
+    ina = cons->getInt("which Current Senese Chip (1-8)? ");
+    if (ina<1)
+      ina = 1;
+    if (ina>8)
+      ina = 8;
+
+    if (currsense[ina-1] == 0){
+      Serial.println("Please initialize the INA219's first");
+      return;
+    }
+    shuntvoltage = currsense[ina-1]->getShuntVoltage_mV();
+    busvoltage = currsense[ina-1]->getBusVoltage_V();
+    current_mA = currsense[ina-1]->getCurrent_mA();
+    Serial.println("get IV of INA219-" + String(ina));
+    Serial.println("current (mA): " + String(current_mA / 100));
+    Serial.print("Bus Voltage (V):   ");
+    Serial.println(busvoltage);
+    Serial.print("Shunt Voltage (mV): ");
+    Serial.println(shuntvoltage);
+    
   case 99:
     Wire.beginTransmission(__IO_EXPANDER_I2C_ADDR);
     Wire.write(0xFF);
