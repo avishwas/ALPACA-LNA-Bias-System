@@ -26,13 +26,20 @@
  *    TODO: When switching from card to card (via command 7), the current program will forget what the pin states are.
  *    Users should expect to find the pin states re-written to 0 when connecting to new or previous address
  *
+ *  2023-05-15
+ *    Testing in-lab. There was an error with the init ina219's where ina219_x.begin was not called. This prevented successful operation.
+ *    Modified current divider for the INA's such that they report something more accurate.
+ *    version 0.5
+ *  2023-05-16
+ *    Accounted for IO expander pin sate in commands 99 and 100. Removed extraneous 'newline/return'
+ *    verison 0.6
  */
 
 #include <Arduino.h>
 #include "TuiConsole.h"
 #include <Adafruit_INA219.h>
 #include <Wire.h>
-#define SW_VERSION_NUMBER "0.4"
+#define SW_VERSION_NUMBER "0.6"
 
 // *********** I2C DEVICE ADDRESSES *****************
 #define __DIGITALPOT_1_I2C_ADDR 0b0101111
@@ -87,7 +94,7 @@ void setup()
   cons = new TuiConsole(&Serial, 9600); // Setup Serial Console
   Wire.begin();                         // start/setup i2c arduino interface
 
-  //initialize current sensor 1
+  // initialize current sensor 1
   currsense[0] = new Adafruit_INA219(__CURR_SENSE_BASE_I2C_ADDR);
 }
 
@@ -97,7 +104,7 @@ void loop()
     Serial.read();
 
   Serial.println("\r\nALPACA BIAS BOARD TEST CODE (built: " + String(__DATE__) + "_" + String(__TIME__) + "_v" + SW_VERSION_NUMBER + ")\r\n");
-  Serial.println("Select Option:\r\n     1. begin comms\r\n      2. en dpots\r\n      3. en v1\r\n      4. sweep wiper 1\r\n      5. set wiper 1\r\n      6. get I+V 1\r\n            7. end_comms\r\n      8. set io expander pin ( numbered 0 - n )\r\n      9. set wiper\r\n      10. sweep wiper\r\n");
+  Serial.println("Select Option:\r\n      1. begin comms\r\n      2. en dpots\r\n      3. en v1\r\n      4. sweep wiper 1\r\n      5. set wiper 1\r\n      6. get I+V 1\r\n      7. end_comms\r\n      8. set io expander pin ( numbered 0 - n )\r\n      9. set wiper\r\n      10. sweep wiper");
   Serial.println("      11. Initialize INA219s (2-8)\r\n      12. get I+V");
   Serial.println("      99. set all expander1 pins high\r\n      100. set all expander1 pins low\r\n");
   int cmd = cons->getInt("\r\noption: ");
@@ -234,25 +241,29 @@ void loop()
         return;
     }
     break;
-  case 11: //init the rest of the INA219s
-  for (int i = 1; i < 8; i++)
-    currsense[i] = new Adafruit_INA219(__CURR_SENSE_BASE_I2C_ADDR+i);
-  break;
+  case 11: // init the rest of the INA219s
+    for (int i = 1; i < 8; i++)
+    {
+      currsense[i] = new Adafruit_INA219(__CURR_SENSE_BASE_I2C_ADDR + i);
+      currsense[i]->begin();
+    }
+    break;
 
-  case 12: //get I+V reading
+  case 12: // get I+V reading
     ina = cons->getInt("which Current Senese Chip (1-8)? ");
-    if (ina<1)
+    if (ina < 1)
       ina = 1;
-    if (ina>8)
+    if (ina > 8)
       ina = 8;
 
-    if (currsense[ina-1] == 0){
+    if (currsense[ina - 1] == 0)
+    {
       Serial.println("Please initialize the INA219's first");
       return;
     }
-    shuntvoltage = currsense[ina-1]->getShuntVoltage_mV();
-    busvoltage = currsense[ina-1]->getBusVoltage_V();
-    current_mA = currsense[ina-1]->getCurrent_mA();
+    shuntvoltage = currsense[ina - 1]->getShuntVoltage_mV();
+    busvoltage = currsense[ina - 1]->getBusVoltage_V();
+    current_mA = currsense[ina - 1]->getCurrent_mA();
     Serial.println("get IV of INA219-" + String(ina));
     Serial.println("current (mA): " + String(current_mA / 100));
     Serial.print("Bus Voltage (V):   ");
@@ -261,12 +272,14 @@ void loop()
     Serial.println(shuntvoltage);
     break;
   case 99:
+    IO_EXPANDER_PINSTATE = 0xFFFF;
     Wire.beginTransmission(__IO_EXPANDER_I2C_ADDR);
     Wire.write(0xFF);
     Wire.write(0xFF);
     Serial.println("expander status = " + String(Wire.endTransmission()));
     break;
   case 100:
+    IO_EXPANDER_PINSTATE = 0x0000;
     Wire.beginTransmission(__IO_EXPANDER_I2C_ADDR);
     Wire.write(0x0);
     Wire.write(0x0);
