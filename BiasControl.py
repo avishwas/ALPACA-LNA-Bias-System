@@ -35,8 +35,8 @@ if geteuid() != 0:
     raise BaseException("\033[0;31m\n\nBiasControl.py requires ROOT privileges\n\033[0m")
 
 # Address Constants
-LTC4302_BASE_ADDR = int(0b1_1100_000)
-INSTR_LTCDISCONNECT = int(0b0_1100_000)
+LTC4302_BASE_ADDR = int(0b1100_000)
+INSTR_LTCDISCONNECT = int(0b1100_000)
 PCF8575_BASE_ADDR = int(0b0100_000)
 LTC4302_BASE_ADDR = int(0b11_00000)
 DIGITALPOT_1_I2C_ADDR  = int(0b0101111)
@@ -60,7 +60,7 @@ class BiasChannel():
         assert board_addr >= 0, "Address must be 0 or higher"
         assert board_addr <= 31, "Address must be 31 or lower"
 
-        self.__repeater_fh = setup(0, LTC4302_BASE_ADDR+board_addr)
+        self.__repeater_fh = setup("/dev/i2c-0", LTC4302_BASE_ADDR+board_addr)
         xpandrfh = setup(0, PCF8575_BASE_ADDR)
         write(xpandrfh, 0)
         write(xpandrfh, 0)
@@ -83,8 +83,8 @@ class BiasChannel():
         """ Test Function. Used to test that the bias board Channel 1 is Working.
         """
         self.__start()
-        xpandrfh = setup(0, PCF8575_BASE_ADDR)
-        dpfh = setup(0, DIGITALPOT_1_I2C_ADDR)
+        xpandrfh = setup("/dev/i2c-0", PCF8575_BASE_ADDR)
+        dpfh = setup("/dev/i2c-0", DIGITALPOT_1_I2C_ADDR)
         xpandr = 0b11
         write(xpandrfh, xpandr)
         write(xpandrfh, 0)
