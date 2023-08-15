@@ -35,14 +35,14 @@ if geteuid() != 0:
     raise BaseException("\033[0;31m\n\nBiasControl.py requires ROOT privileges\n\033[0m")
 
 # Address Constants
-__INSTR_LTCCONNECT = 0b1_1100_000
-__INSTR_LTCDISCONNECT = 0b0_1100_000
-__PCF8575_BASE_ADDR = 0b0100_000
-__LTC4302_BASE_ADDR = 0b11_00000
-__DIGITALPOT_1_I2C_ADDR  = 0b0101111
+LTC4302_BASE_ADDR = 0b1_1100_000
+INSTR_LTCDISCONNECT = 0b0_1100_000
+PCF8575_BASE_ADDR = 0b0100_000
+LTC4302_BASE_ADDR = 0b11_00000
+DIGITALPOT_1_I2C_ADDR  = 0b0101111
 __DIGITALPOT_2_I2C_ADDR = 0b0100011
 __CURR_SENSE_BASE_I2C_ADDR = 0b1001000
-__AD5144_CMD_WRITE_RDAC = 0b00010000
+AD5144_CMD_WRITE_RDAC = 0b00010000
 
 class BiasChannel():
     
@@ -60,8 +60,8 @@ class BiasChannel():
         assert board_addr >= 0, "Address must be 0 or higher"
         assert board_addr <= 31, "Address must be 31 or lower"
 
-        self.__repeater_fh = setup(0, __LTC4302_BASE_ADDR+board_addr)
-        xpandrfh = setup(0, __PCF8575_BASE_ADDR)
+        self.__repeater_fh = setup(0, LTC4302_BASE_ADDR+board_addr)
+        xpandrfh = setup(0, PCF8575_BASE_ADDR)
         write(xpandrfh, 0)
         write(xpandrfh, 0)
         op.serialClose(xpandrfh)
@@ -70,25 +70,25 @@ class BiasChannel():
         """ Used to prepare controller <-> board connection by instructing a i2c repeater
         to connect our i2c bus to the board's bus.
         """
-        write(self.__repeater_fh, __INSTR_LTCCONNECT)
+        write(self.__repeater_fh, LTC4302_BASE_ADDR)
         
 
     def __end(self):
         """ Used to close controller <-> board connection by instructing a i2c repeater
         to disconnect our i2c bus to the board's bus.
         """
-        write(self.__repeater_fh, __INSTR_LTCDISCONNECT)
+        write(self.__repeater_fh, INSTR_LTCDISCONNECT)
 
     def test_chan1(self):
         """ Test Function. Used to test that the bias board Channel 1 is Working.
         """
         self.__start()
-        xpandrfh = setup(0, __PCF8575_BASE_ADDR)
-        dpfh = setup(0, __DIGITALPOT_1_I2C_ADDR)
+        xpandrfh = setup(0, PCF8575_BASE_ADDR)
+        dpfh = setup(0, DIGITALPOT_1_I2C_ADDR)
         xpandr = 0b11
         write(xpandrfh, xpandr)
         write(xpandrfh, 0)
-        write(dpfh, __AD5144_CMD_WRITE_RDAC)
+        write(dpfh, AD5144_CMD_WRITE_RDAC)
         write(dpfh, 255)
         op.serialClose(dpfh)
         op.serialClose(xpandr)
