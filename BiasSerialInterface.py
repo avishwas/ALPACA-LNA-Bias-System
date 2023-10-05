@@ -276,7 +276,7 @@ class BiasBoard:
         """
         return 0.01 * self.__ina_getShuntVoltage_raw(chan)
 
-    def get_bus(self, chan) -> float:
+    def get_bus(self, chan: int) -> float:
         """Reads a current monitor for it's bus voltage for a given channel
 
         :param chan: Select the bias channel to measure (1 through 8)
@@ -304,8 +304,7 @@ def test_bias_board(board: int):
     """BIAS BOARD TEST ROUTINE.
 
     .. DANGER ::
-        This function is used to test the bias boards themselves and is only for
-        ASU engineers only. Inappropriate use risks blow up any connected amplifiers/equipment
+        This function is used to test the bias boards themselves at ASU. Inappropriate use may result in damaged amplifiers/equipment.
 
     Iterates through each channel and does the following:
         #. Enable corresponding regulator using io expander

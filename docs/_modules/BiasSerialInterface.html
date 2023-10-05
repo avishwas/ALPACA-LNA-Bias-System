@@ -347,7 +347,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ina_getShuntVoltage_raw</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BiasBoard.get_bus"><a class="viewcode-back" href="../BiasSerialInterface.html#BiasSerialInterface.BiasBoard.get_bus">[docs]</a>    <span class="k">def</span> <span class="nf">get_bus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="BiasBoard.get_bus"><a class="viewcode-back" href="../BiasSerialInterface.html#BiasSerialInterface.BiasBoard.get_bus">[docs]</a>    <span class="k">def</span> <span class="nf">get_bus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reads a current monitor for it&#39;s bus voltage for a given channel</span>
 
 <span class="sd">        :param chan: Select the bias channel to measure (1 through 8)</span>
@@ -375,8 +375,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;BIAS BOARD TEST ROUTINE.</span>
 
 <span class="sd">    .. DANGER ::</span>
-<span class="sd">        This function is used to test the bias boards themselves and is only for</span>
-<span class="sd">        ASU engineers only. Inappropriate use risks blow up any connected amplifiers/equipment</span>
+<span class="sd">        This function is used to test the bias boards themselves at ASU. Inappropriate use may result in damaged amplifiers/equipment.</span>
 
 <span class="sd">    Iterates through each channel and does the following:</span>
 <span class="sd">        #. Enable corresponding regulator using io expander</span>

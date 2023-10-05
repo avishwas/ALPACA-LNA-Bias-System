@@ -133,7 +133,7 @@
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="BiasSerialInterface.BiasBoard.get_bus">
-<span class="sig-name descname"><span class="pre">get_bus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chan</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/BiasSerialInterface.html#BiasBoard.get_bus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BiasSerialInterface.BiasBoard.get_bus" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_bus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/BiasSerialInterface.html#BiasBoard.get_bus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BiasSerialInterface.BiasBoard.get_bus" title="Permalink to this definition"></a></dt>
 <dd><p>Reads a current monitor for it’s bus voltage for a given channel</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -264,8 +264,7 @@
 <dd><p>BIAS BOARD TEST ROUTINE.</p>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
-<p>This function is used to test the bias boards themselves and is only for
-ASU engineers only. Inappropriate use risks blow up any connected amplifiers/equipment</p>
+<p>This function is used to test the bias boards themselves at ASU. Inappropriate use may result in damaged amplifiers/equipment.</p>
 </div>
 <dl class="simple">
 <dt>Iterates through each channel and does the following:</dt><dd><ol class="arabic simple">
