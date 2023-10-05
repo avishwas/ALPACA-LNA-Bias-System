@@ -68,13 +68,25 @@ INA219_REG_BUSVOLTAGE = 0x02
 INA219_REG_POWER = 0x03
 INA219_REG_CURRENT = 0x04
 
+
+def MSBF(val):
+    """Converts val from LSB first to MSB first for use with the INA219
+
+    :param val: 16-bit value
+    :type val: int (unsigned)
+    :return: 16-bit MSB first value
+    :rtype: int (unsigned)
+    """
+    return ((val & 0xFF) << 8) | ((val >> 8) & 0xFF)
+
+
 # HARD CODED CONFIG
 # calibration_reg  0x5 0x1000
 # config_reg -> 0x0 0x399f
-# INA219CONFIG = 0x399F
-# INACALVALUE = 0x1000
-INA219CONFIG = 0b1001_1111_0011_1001
-INACALVALUE = 0b0000_0000_0001_0000
+INA219CONFIG = MSBF(0x399F)
+INACALVALUE = MSBF(0x1000)
+# INA219CONFIG = 0b1001_1111_0011_1001
+# INACALVALUE = 0b0000_0000_0001_0000
 # Linux I2C bus path
 BUS = "/dev/i2c-0"
 
@@ -186,34 +198,33 @@ class BiasChannel:
         close(self.frptr)
 
     # INA219 stuff below...
-    def ina_init(self, chan):
-        """
-        Initializes all of the Board's INA219's
+    def ina_init(self, chan, currentDivider=1000):
+        """Initializes given INA219 of the Board's INA219's
+
         Code ripped from https://github.com/adafruit/Adafruit_INA219/blob/master/Adafruit_INA219.cpp
+
+        :param chan: _description_
+        :type chan: _type_
+        :param currentDivider: _description_
+        :type currentDivider: _type_
         """
         self.__start()
         sleep(0.1)
         self.fina = self.get_fina(chan)
 
-        self.ina219_currentDivider_mA = 10
+        self.ina219_currentDivider_mA = currentDivider
         self.ina219_powerMultiplier_mW = 2
 
         # Set Calibration register to 'Cal' calculated above
         write16(self.fina, INA219_REG_CALIBRATION, INACALVALUE)
-        #        write16(self.fina, INACALVALUE, INA219_REG_CALIBRATION)
         write16(self.fina, INA219_REG_CONFIG, INA219CONFIG)
-
-        #       write16(self.fina, INA219CONFIG, INA219_REG_CONFIG)
         self.__end([self.fina])
 
     def ina_getCurrent_raw(self, chan):
         self.__start()
         ina = self.get_fina(chan)
         write16(ina, INA219_REG_CALIBRATION, INACALVALUE)
-        val = read16(ina, INA219_REG_CURRENT)
-        # lsb = (val & 0xFF00) >>8
-        # msb = (val & 0xFF)
-        # val = (msb << 8) | lsb
+        val = MSBF(read16(ina, INA219_REG_CURRENT))
         self.__end([ina])
         return val
 
@@ -221,27 +232,22 @@ class BiasChannel:
         self.__start()
         ina = self.get_fina(chan)
         write16(ina, INA219_REG_CALIBRATION, INACALVALUE)
-        val = read16(ina, INA219_REG_POWER)
+        val = MSBF(read16(ina, INA219_REG_POWER))
         self.__end([ina])
         return val
 
     def ina_getShuntVoltage_raw(self, chan):
         self.__start()
         ina = self.get_fina(chan)
-        val = read16(ina, INA219_REG_SHUNTVOLTAGE)
-        lsb = (val & 0xFF00) >> 8
-        msb = val & 0xFF
-        val = (msb << 8) | lsb
-
+        val = MSBF(read16(ina, INA219_REG_SHUNTVOLTAGE))
         self.__end([ina])
         return val
 
     def ina_getBusVoltage_raw(self, chan):
         self.__start()
         ina = self.get_fina(chan)
-        sleep(0.1)
         write16(ina, INA219_REG_CALIBRATION, INACALVALUE)
-        val = read16(ina, INA219_REG_BUSVOLTAGE)
+        val = MSBF(read16(ina, INA219_REG_BUSVOLTAGE))
         self.__end([ina])
         return (
             val >> 3
