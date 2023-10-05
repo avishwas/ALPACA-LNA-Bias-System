@@ -7,7 +7,8 @@ ___
 ## General Information
 This repository contains the documentation and software for the VME cards designed for the Series 2151 VME backplane / enclosure. This repo shall be made available to our collaborators.
 
-*Instructions for using the ordoid and or code shall be found in the documentation folder.*
+**[--> Read the Docs here <--](https://asu-astronomical-instrumentation.github.io/ALPACA-LNA-Bias-System/)**
+
 <p>&nbsp</p>
 
 ### Hardware
