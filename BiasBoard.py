@@ -1,5 +1,6 @@
 """
 :Authors: - Cody Roberson (carobers@asu.edu)
+    - Eric Weeks
 :Date: 10/4/2023
 :Copyright: 2023 Arizona State University
 :Version: 1.0
@@ -8,9 +9,8 @@ Overview
 --------
 Low level serial interface for interacting with the cards within the VME unit.
 
-..Note ::
-    This software requires root
-
+.. Important ::
+    This software requires the user to be root.
 
 """
 from odroid_wiringpi import wiringPiI2CSetupInterface as setup
@@ -21,16 +21,9 @@ from odroid_wiringpi import wiringPiI2CReadReg16 as read16
 from odroid_wiringpi import wiringPiI2CWriteReg8 as write8
 from odroid_wiringpi import wiringPiI2CReadReg8 as read8
 from odroid_wiringpi import serialClose as close
-import sys
-from os import geteuid
 from time import sleep
 
 __VERSION__ = 1.0
-
-if geteuid() != 0:
-    raise BaseException(
-        "\033[0;31m\n\nBiasControl.py requires ROOT privileges\n\033[0m"
-    )
 
 # DEVICE INSTRUCTIONS
 INSTR_LTCCONNECT = 0b11100000
@@ -59,7 +52,7 @@ INA219_REG_CURRENT = 0x04
 
 
 def MSBF(val: int) -> int:
-    """Converts val from LSB first to MSB first for use with the INA219
+    """Swaps byte order of 'val'. (needed for current sense chip)
 
     :param val: 16-bit value
     :type val: int (unsigned)
@@ -88,7 +81,7 @@ LOW = False
 class BiasBoard:
     """Creats a control interface for one of the bias boards for a given address in a given system.
 
-    .. WARNING::
+    .. Note::
         This library modifies the I2C Clock from the default 400 KHz to 100KHz
 
     :param addr: Bias board address within VME crate. (1 to 18).
@@ -122,9 +115,9 @@ class BiasBoard:
         return setup(BUS, DIGITALPOT_2_I2C_ADDR)
 
     def __get_fina(self, chan):
-        chan = chan - 1
         assert chan > 0, "Channel can't be negative. (possible choices are 1-8)"
         assert chan < 8, "Channel doesnt exist. (possible choices are 1-8)"
+        chan = chan - 1
         return setup(BUS, CURR_SENSE_BASE_I2C_ADDR + chan)
 
     def set_ioexpander(self, pin: int, state: bool, zero=False):
@@ -189,14 +182,14 @@ class BiasBoard:
 
     def zero_pots(self):
         """Sets all of the Digital Pots on the Board to 0"""
-        self.set_pot(1, 0, 0)
         self.set_pot(1, 1, 0)
         self.set_pot(1, 2, 0)
         self.set_pot(1, 3, 0)
-        self.set_pot(2, 0, 0)
+        self.set_pot(1, 4, 0)
         self.set_pot(2, 1, 0)
         self.set_pot(2, 2, 0)
         self.set_pot(2, 3, 0)
+        self.set_pot(2, 4, 0)
 
     def zero_ioexpander(self):
         """Sets all of the pins on the internal io-expander to 0"""
@@ -283,7 +276,7 @@ class BiasBoard:
         """
         return 0.01 * self.__ina_getShuntVoltage_raw(chan)
 
-    def get_bus(self, chan) -> float:
+    def get_bus(self, chan: int) -> float:
         """Reads a current monitor for it's bus voltage for a given channel
 
         :param chan: Select the bias channel to measure (1 through 8)
@@ -310,20 +303,19 @@ class BiasBoard:
 def test_bias_board(board: int):
     """BIAS BOARD TEST ROUTINE.
 
-    ..DANGER ::
-        THIS FUNCTION IS USED TO TEST THE BIAS BOARDS THEMSELVES AND IS ONLY FOR
-        ASU ENGINEERS ONLY. INAPPROPRIATE USE MAY BLOW UP ANY CONNECTED AMPLIFIERS/EQUIPMENT
+    .. DANGER ::
+        This function is used to test the bias boards themselves at ASU. Inappropriate use may result in damaged amplifiers/equipment.
 
     Iterates through each channel and does the following:
-    #. Enable corresponding regulator using io expander
-    #. Init current sense chip
-    #. sets pot to 0
-    #. reads current, shunt, and bus
-    #. sets pot to 100
-    #. reads current, shunt, and bus
-    #. sets pot to 200
-    #. reads current, shunt, and bus
-    #. repeat procedure for next channel
+        #. Enable corresponding regulator using io expander
+        #. Init current sense chip
+        #. sets pot to 0
+        #. reads current, shunt, and bus
+        #. sets pot to 100
+        #. reads current, shunt, and bus
+        #. sets pot to 200
+        #. reads current, shunt, and bus
+        #. repeat procedure for next channel
     """
     b = BiasBoard(board)
     print(f"Setting all expanders to 0 for board {board}")
