@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BiasSerialInterface module &mdash; ALPACA LNA Bias System 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="ALPACA-LNA-Bias-System" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ALPACA LNA Bias System
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ALPACA-LNA-Bias-System</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">BiasSerialInterface module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#BiasSerialInterface.BiasBoard"><code class="docutils literal notranslate"><span class="pre">BiasBoard</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#BiasSerialInterface.BiasBoard.get_bus"><code class="docutils literal notranslate"><span class="pre">BiasBoard.get_bus()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#BiasSerialInterface.BiasBoard.get_current"><code class="docutils literal notranslate"><span class="pre">BiasBoard.get_current()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#BiasSerialInterface.BiasBoard.get_shunt"><code class="docutils literal notranslate"><span class="pre">BiasBoard.get_shunt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#BiasSerialInterface.BiasBoard.init_currsense"><code class="docutils literal notranslate"><span class="pre">BiasBoard.init_currsense()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#BiasSerialInterface.BiasBoard.set_ioexpander"><code class="docutils literal notranslate"><span class="pre">BiasBoard.set_ioexpander()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#BiasSerialInterface.BiasBoard.set_pot"><code class="docutils literal notranslate"><span class="pre">BiasBoard.set_pot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#BiasSerialInterface.BiasBoard.zero_ioexpander"><code class="docutils literal notranslate"><span class="pre">BiasBoard.zero_ioexpander()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#BiasSerialInterface.BiasBoard.zero_pots"><code class="docutils literal notranslate"><span class="pre">BiasBoard.zero_pots()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#BiasSerialInterface.MSBF"><code class="docutils literal notranslate"><span class="pre">MSBF()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#BiasSerialInterface.test_bias_board"><code class="docutils literal notranslate"><span class="pre">test_bias_board()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ALPACA LNA Bias System</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">ALPACA-LNA-Bias-System</a></li>
+      <li class="breadcrumb-item active">BiasSerialInterface module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/BiasSerialInterface.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-BiasSerialInterface">
+<span id="biasserialinterface-module"></span><h1>BiasSerialInterface module<a class="headerlink" href="#module-BiasSerialInterface" title="Permalink to this heading"></a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Authors<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p>Cody Roberson (<a class="reference external" href="mailto:carobers&#37;&#52;&#48;asu&#46;edu">carobers<span>&#64;</span>asu<span>&#46;</span>edu</a>)</p></li>
+<li><p>Eric Weeks</p></li>
+</ul>
+</dd>
+<dt class="field-even">Date<span class="colon">:</span></dt>
+<dd class="field-even"><p>10/4/2023</p>
+</dd>
+<dt class="field-odd">Copyright<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2023 Arizona State University</p>
+</dd>
+<dt class="field-even">Version<span class="colon">:</span></dt>
+<dd class="field-even"><p>1.0</p>
+</dd>
+</dl>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<p>Low level serial interface for interacting with the cards within the VME unit.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This software requires the user to be root.</p>
+</div>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="BiasSerialInterface.BiasBoard">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">BiasSerialInterface.</span></span><span class="sig-name descname"><span class="pre">BiasBoard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">addr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BiasSerialInterface.html#BiasBoard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BiasSerialInterface.BiasBoard" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Creats a control interface for one of the bias boards for a given address in a given system.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This library modifies the I2C Clock from the default 400 KHz to 100KHz</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>addr</strong> – Bias board address within VME crate. (1 to 18).</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="BiasSerialInterface.BiasBoard.get_bus">
+<span class="sig-name descname"><span class="pre">get_bus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/BiasSerialInterface.html#BiasBoard.get_bus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BiasSerialInterface.BiasBoard.get_bus" title="Permalink to this definition"></a></dt>
+<dd><p>Reads a current monitor for it’s bus voltage for a given channel</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>chan</strong> (<em>int</em>) – Select the bias channel to measure (1 through 8)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bus voltage in Volts</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="BiasSerialInterface.BiasBoard.get_current">
+<span class="sig-name descname"><span class="pre">get_current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/BiasSerialInterface.html#BiasBoard.get_current"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BiasSerialInterface.BiasBoard.get_current" title="Permalink to this definition"></a></dt>
+<dd><p>Reads a current monitor for the bias’s current draw for a given channel</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>chan</strong> (<em>int</em>) – Select the bias channel to measure (1 through 8)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Current in mA</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="BiasSerialInterface.BiasBoard.get_shunt">
+<span class="sig-name descname"><span class="pre">get_shunt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/BiasSerialInterface.html#BiasBoard.get_shunt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BiasSerialInterface.BiasBoard.get_shunt" title="Permalink to this definition"></a></dt>
+<dd><p>Reads a current monitor for it’s shunt voltage for a given channel</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>chan</strong> (<em>int</em>) – Select the bias channel to measure (1 through 8)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>shunt voltage in mV</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="BiasSerialInterface.BiasBoard.init_currsense">
+<span class="sig-name descname"><span class="pre">init_currsense</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">currentDivider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/BiasSerialInterface.html#BiasBoard.init_currsense"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BiasSerialInterface.BiasBoard.init_currsense" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes an INA219 current sense chip for a given channel</p>
+<p>Code ripped from <a class="reference external" href="https://github.com/adafruit/Adafruit_INA219/blob/master/Adafruit_INA219.cpp">https://github.com/adafruit/Adafruit_INA219/blob/master/Adafruit_INA219.cpp</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chan</strong> (<em>int</em>) – select the bias channel to initialize (1 through 8)</p></li>
+<li><p><strong>currentDivider</strong> (<em>float</em><em>, </em><em>optional</em>) – useful for cases where sense resistors have been modified, defaults to 2.0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="BiasSerialInterface.BiasBoard.set_ioexpander">
+<span class="sig-name descname"><span class="pre">set_ioexpander</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BiasSerialInterface.html#BiasBoard.set_ioexpander"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BiasSerialInterface.BiasBoard.set_ioexpander" title="Permalink to this definition"></a></dt>
+<dd><p>Set gpio pin high or low within a the bias board</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>int</em>) – pin number (0 through 16)</p></li>
+<li><p><strong>state</strong> (<em>bool</em>) – HIGH or LOW</p></li>
+<li><p><strong>zero</strong> (<em>bool</em><em>, </em><em>optional</em>) – When set to true, sets all pins to 0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="BiasSerialInterface.BiasBoard.set_pot">
+<span class="sig-name descname"><span class="pre">set_pot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wiper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BiasSerialInterface.html#BiasBoard.set_pot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BiasSerialInterface.BiasBoard.set_pot" title="Permalink to this definition"></a></dt>
+<dd><p>Sets a given digital pot, wiper to value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pot</strong> (<em>int</em><em>, </em><em>optional</em>) – Digital Pot (1 or 2), defaults to 1</p></li>
+<li><p><strong>wiper</strong> (<em>int</em><em>, </em><em>optional</em>) – Wiper number, defaults to 1</p></li>
+<li><p><strong>value</strong> (<em>int</em><em>, </em><em>optional</em>) – What value to set the wiper to (0-255), defaults to 0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="BiasSerialInterface.BiasBoard.zero_ioexpander">
+<span class="sig-name descname"><span class="pre">zero_ioexpander</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BiasSerialInterface.html#BiasBoard.zero_ioexpander"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BiasSerialInterface.BiasBoard.zero_ioexpander" title="Permalink to this definition"></a></dt>
+<dd><p>Sets all of the pins on the internal io-expander to 0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="BiasSerialInterface.BiasBoard.zero_pots">
+<span class="sig-name descname"><span class="pre">zero_pots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BiasSerialInterface.html#BiasBoard.zero_pots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BiasSerialInterface.BiasBoard.zero_pots" title="Permalink to this definition"></a></dt>
+<dd><p>Sets all of the Digital Pots on the Board to 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="BiasSerialInterface.MSBF">
+<span class="sig-prename descclassname"><span class="pre">BiasSerialInterface.</span></span><span class="sig-name descname"><span class="pre">MSBF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/BiasSerialInterface.html#MSBF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BiasSerialInterface.MSBF" title="Permalink to this definition"></a></dt>
+<dd><p>Swaps byte order of ‘val’. (needed for current sense chip)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>val</strong> (<em>int</em><em> (</em><em>unsigned</em><em>)</em>) – 16-bit value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>16-bit MSB first value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int (unsigned)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="BiasSerialInterface.test_bias_board">
+<span class="sig-prename descclassname"><span class="pre">BiasSerialInterface.</span></span><span class="sig-name descname"><span class="pre">test_bias_board</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BiasSerialInterface.html#test_bias_board"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BiasSerialInterface.test_bias_board" title="Permalink to this definition"></a></dt>
+<dd><p>BIAS BOARD TEST ROUTINE.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>This function is used to test the bias boards themselves at ASU. Inappropriate use may result in damaged amplifiers/equipment.</p>
+</div>
+<dl class="simple">
+<dt>Iterates through each channel and does the following:</dt><dd><ol class="arabic simple">
+<li><p>Enable corresponding regulator using io expander</p></li>
+<li><p>Init current sense chip</p></li>
+<li><p>sets pot to 0</p></li>
+<li><p>reads current, shunt, and bus</p></li>
+<li><p>sets pot to 100</p></li>
+<li><p>reads current, shunt, and bus</p></li>
+<li><p>sets pot to 200</p></li>
+<li><p>reads current, shunt, and bus</p></li>
+<li><p>repeat procedure for next channel</p></li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="ALPACA-LNA-Bias-System" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Arizona State University.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
