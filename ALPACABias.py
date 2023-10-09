@@ -1,10 +1,15 @@
 """
-Overview
-========
+:Authors: - Cody Roberson (carobers@asu.edu)
+    - Eric Weeks
+:Date: 10/8/2023
+:Copyright: 2023 Arizona State University
+:Version: 1.1
 
 Provides the end user with control over the LNA biases in the VME crate.
 The channel parameter of these functions should be 1 through 144 inclusively.
 
+.. Important ::
+    This software requires the user to be root.
 
 """
 import BiasBoardControl as bc
@@ -18,11 +23,11 @@ MAXITER = 256
 
 
 def iLNA(chan: int, set_current: float):
-    """_summary_
+    """Modifies V(out) until a desired set current is reached.
 
     :param chan: LNA channel (1 through 144)
     :type chan: int
-    :param set_current: _description_
+    :param set_current: Desired current in mA
     :type set_current: float
     """
     bd, ch = __getboard(chan)
@@ -52,11 +57,11 @@ def iLNA(chan: int, set_current: float):
 
 
 def vLNA(chan: int, set_voltage: float):
-    """_summary_
+    """Modifies V(out) until a desired voltage is reached.
 
     :param chan: LNA channel (1 through 144)
     :type chan: int
-    :param set_voltage: _description_
+    :param set_voltage: Desired voltage (Volts)
     :type set_voltage: float
     """
     bd, ch = __getboard(chan)
@@ -86,11 +91,25 @@ def vLNA(chan: int, set_voltage: float):
 
 
 def get_iLNA(chan: int):
+    """Reads the current in mA for a given channel.
+
+    :param chan: LNA channel (1 through 144)
+    :type chan: int
+    :return: Current (mA)
+    :rtype: float
+    """
     bd, ch = __getboard(chan)
     return bd.get_current(ch)
 
 
 def get_vLNA(chan: int):
+    """Reads the voltage in volts for a given channel.
+
+    :param chan: LNA channel (1 through 144)
+    :type chan: int
+    :return: Voltage (Volts)
+    :rtype: float
+    """
     bd, ch = __getboard(chan)
     return bd.get_bus(ch)
 

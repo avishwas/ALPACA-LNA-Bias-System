@@ -3,14 +3,10 @@
     - Eric Weeks
 :Date: 10/4/2023
 :Copyright: 2023 Arizona State University
-:Version: 1.0
+:Version: 1.1
 
-Overview
---------
 Low level serial interface for interacting with the cards within the VME unit.
-
-.. Important ::
-    This software requires the user to be root.
+**Users shouldn't need anything from this module.**
 
 """
 from odroid_wiringpi import wiringPiI2CSetupInterface as setup
