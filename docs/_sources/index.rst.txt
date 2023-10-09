@@ -37,7 +37,7 @@ Using the environment:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: API:
 
    modules
 

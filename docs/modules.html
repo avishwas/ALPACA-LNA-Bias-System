@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="BiasSerialInterface module" href="BiasSerialInterface.html" />
+    <link rel="next" title="ALPACABias module" href="ALPACABias.html" />
     <link rel="prev" title="Welcome to ALPACA LNA Bias System’s documentation!" href="index.html" /> 
 </head>
 
@@ -42,10 +42,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ALPACA-LNA-Bias-System</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BiasSerialInterface.html">BiasSerialInterface module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ALPACABias.html">ALPACABias module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BiasBoardControl.html">BiasBoardControl module</a></li>
 </ul>
 </li>
 </ul>
@@ -78,21 +79,28 @@
 <h1>ALPACA-LNA-Bias-System<a class="headerlink" href="#alpaca-lna-bias-system" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="BiasSerialInterface.html">BiasSerialInterface module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BiasSerialInterface.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BiasSerialInterface.html#BiasSerialInterface.BiasBoard"><code class="docutils literal notranslate"><span class="pre">BiasBoard</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="BiasSerialInterface.html#BiasSerialInterface.BiasBoard.get_bus"><code class="docutils literal notranslate"><span class="pre">BiasBoard.get_bus()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="BiasSerialInterface.html#BiasSerialInterface.BiasBoard.get_current"><code class="docutils literal notranslate"><span class="pre">BiasBoard.get_current()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="BiasSerialInterface.html#BiasSerialInterface.BiasBoard.get_shunt"><code class="docutils literal notranslate"><span class="pre">BiasBoard.get_shunt()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="BiasSerialInterface.html#BiasSerialInterface.BiasBoard.init_currsense"><code class="docutils literal notranslate"><span class="pre">BiasBoard.init_currsense()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="BiasSerialInterface.html#BiasSerialInterface.BiasBoard.set_ioexpander"><code class="docutils literal notranslate"><span class="pre">BiasBoard.set_ioexpander()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="BiasSerialInterface.html#BiasSerialInterface.BiasBoard.set_pot"><code class="docutils literal notranslate"><span class="pre">BiasBoard.set_pot()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="BiasSerialInterface.html#BiasSerialInterface.BiasBoard.zero_ioexpander"><code class="docutils literal notranslate"><span class="pre">BiasBoard.zero_ioexpander()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="BiasSerialInterface.html#BiasSerialInterface.BiasBoard.zero_pots"><code class="docutils literal notranslate"><span class="pre">BiasBoard.zero_pots()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="ALPACABias.html">ALPACABias module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ALPACABias.html#ALPACABias.get_iLNA"><code class="docutils literal notranslate"><span class="pre">get_iLNA()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ALPACABias.html#ALPACABias.get_vLNA"><code class="docutils literal notranslate"><span class="pre">get_vLNA()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ALPACABias.html#ALPACABias.iLNA"><code class="docutils literal notranslate"><span class="pre">iLNA()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ALPACABias.html#ALPACABias.vLNA"><code class="docutils literal notranslate"><span class="pre">vLNA()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="BiasSerialInterface.html#BiasSerialInterface.MSBF"><code class="docutils literal notranslate"><span class="pre">MSBF()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="BiasSerialInterface.html#BiasSerialInterface.test_bias_board"><code class="docutils literal notranslate"><span class="pre">test_bias_board()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="BiasBoardControl.html">BiasBoardControl module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="BiasBoardControl.html#BiasBoardControl.BiasBoard"><code class="docutils literal notranslate"><span class="pre">BiasBoard</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="BiasBoardControl.html#BiasBoardControl.BiasBoard.get_bus"><code class="docutils literal notranslate"><span class="pre">BiasBoard.get_bus()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="BiasBoardControl.html#BiasBoardControl.BiasBoard.get_current"><code class="docutils literal notranslate"><span class="pre">BiasBoard.get_current()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="BiasBoardControl.html#BiasBoardControl.BiasBoard.get_pot"><code class="docutils literal notranslate"><span class="pre">BiasBoard.get_pot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="BiasBoardControl.html#BiasBoardControl.BiasBoard.get_shunt"><code class="docutils literal notranslate"><span class="pre">BiasBoard.get_shunt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="BiasBoardControl.html#BiasBoardControl.BiasBoard.init_currsense"><code class="docutils literal notranslate"><span class="pre">BiasBoard.init_currsense()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="BiasBoardControl.html#BiasBoardControl.BiasBoard.set_ioexpander"><code class="docutils literal notranslate"><span class="pre">BiasBoard.set_ioexpander()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="BiasBoardControl.html#BiasBoardControl.BiasBoard.set_pot"><code class="docutils literal notranslate"><span class="pre">BiasBoard.set_pot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="BiasBoardControl.html#BiasBoardControl.BiasBoard.zero_ioexpander"><code class="docutils literal notranslate"><span class="pre">BiasBoard.zero_ioexpander()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="BiasBoardControl.html#BiasBoardControl.BiasBoard.zero_pots"><code class="docutils literal notranslate"><span class="pre">BiasBoard.zero_pots()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="BiasBoardControl.html#BiasBoardControl.MSBF"><code class="docutils literal notranslate"><span class="pre">MSBF()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="BiasBoardControl.html#BiasBoardControl.test_bias_board"><code class="docutils literal notranslate"><span class="pre">test_bias_board()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -104,7 +112,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Welcome to ALPACA LNA Bias System’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="BiasSerialInterface.html" class="btn btn-neutral float-right" title="BiasSerialInterface module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ALPACABias.html" class="btn btn-neutral float-right" title="ALPACABias module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

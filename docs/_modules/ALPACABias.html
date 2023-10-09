@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ALPACABias &mdash; ALPACA LNA Bias System 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ALPACA LNA Bias System
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">ALPACA-LNA-Bias-System</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ALPACA LNA Bias System</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ALPACABias</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ALPACABias</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:Authors: - Cody Roberson (carobers@asu.edu)</span>
+<span class="sd">    - Eric Weeks</span>
+<span class="sd">:Date: 10/8/2023</span>
+<span class="sd">:Copyright: 2023 Arizona State University</span>
+<span class="sd">:Version: 1.1</span>
+
+<span class="sd">Provides the end user with control over the LNA biases in the VME crate.</span>
+<span class="sd">The channel parameter of these functions should be 1 through 144 inclusively.</span>
+
+<span class="sd">.. Important ::</span>
+<span class="sd">    This software requires the user to be root.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">BiasBoardControl</span> <span class="k">as</span> <span class="nn">bc</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">ITOLERANCE</span> <span class="o">=</span> <span class="mf">0.05</span>  <span class="c1"># %</span>
+<span class="n">VTOLERANCE</span> <span class="o">=</span> <span class="mf">0.05</span>  <span class="c1"># %</span>
+
+<span class="n">MAXITER</span> <span class="o">=</span> <span class="mi">256</span>
+
+
+<div class="viewcode-block" id="iLNA"><a class="viewcode-back" href="../ALPACABias.html#ALPACABias.iLNA">[docs]</a><span class="k">def</span> <span class="nf">iLNA</span><span class="p">(</span><span class="n">chan</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">set_current</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modifies V(out) until a desired set current is reached.</span>
+
+<span class="sd">    :param chan: LNA channel (1 through 144)</span>
+<span class="sd">    :type chan: int</span>
+<span class="sd">    :param set_current: Desired current in mA</span>
+<span class="sd">    :type set_current: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="vLNA"><a class="viewcode-back" href="../ALPACABias.html#ALPACABias.vLNA">[docs]</a><span class="k">def</span> <span class="nf">vLNA</span><span class="p">(</span><span class="n">chan</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">set_voltage</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modifies V(out) until a desired voltage is reached.</span>
+
+<span class="sd">    :param chan: LNA channel (1 through 144)</span>
+<span class="sd">    :type chan: int</span>
+<span class="sd">    :param set_voltage: Desired voltage (Volts)</span>
+<span class="sd">    :type set_voltage: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="get_iLNA"><a class="viewcode-back" href="../ALPACABias.html#ALPACABias.get_iLNA">[docs]</a><span class="k">def</span> <span class="nf">get_iLNA</span><span class="p">(</span><span class="n">chan</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads the current in mA for a given channel.</span>
+
+<span class="sd">    :param chan: LNA channel (1 through 144)</span>
+<span class="sd">    :type chan: int</span>
+<span class="sd">    :return: Current (mA)</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="get_vLNA"><a class="viewcode-back" href="../ALPACABias.html#ALPACABias.get_vLNA">[docs]</a><span class="k">def</span> <span class="nf">get_vLNA</span><span class="p">(</span><span class="n">chan</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads the voltage in volts for a given channel.</span>
+
+<span class="sd">    :param chan: LNA channel (1 through 144)</span>
+<span class="sd">    :type chan: int</span>
+<span class="sd">    :return: Voltage (Volts)</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<span class="k">def</span> <span class="nf">__getboard</span><span class="p">(</span><span class="n">channel</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">bc</span><span class="o">.</span><span class="n">BiasBoard</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a provided channel number into a bias board</span>
+<span class="sd">    and channel relative to the board</span>
+
+<span class="sd">    :param channel: User channel</span>
+<span class="sd">    :type channel: int</span>
+<span class="sd">    :return: Matching board and board channel</span>
+<span class="sd">    :rtype: tuple[bc.BiasBoard, int]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">__boards</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span>
+
+
+<span class="n">__boards</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">18</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">bc</span><span class="o">.</span><span class="n">BiasBoard</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">__boards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Arizona State University.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
