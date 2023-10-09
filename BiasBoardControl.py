@@ -22,6 +22,7 @@ from odroid_wiringpi import wiringPiI2CWriteReg8 as write8
 from odroid_wiringpi import wiringPiI2CReadReg8 as read8
 from odroid_wiringpi import serialClose as close
 from time import sleep
+import numpy as np
 
 __VERSION__ = 1.0
 
@@ -100,10 +101,17 @@ class BiasBoard:
             f.close()
         else:
             f.close()
-
-        assert addr >= 0, "Address must be 0 or higher"
-        assert addr <= 31, "Address must be 31 or lower"
         self.pinstate = 0
+        self.pot1 = [0.0, 0.0, 0.0, 0.0]
+        self.pot2 = [0.0, 0.0, 0.0, 0.0]
+
+        # Do startup procedure
+        self.zero_ioexpander()
+        self.set_ioexpander(0, HIGH)
+        for j in range(1, 8 + 1):
+            self.init_currsense(j)
+            self.set_ioexpander(j, HIGH)
+            self.zero_pots()
 
     def __get_fioexpander(self):
         return setup(BUS, PCF8575_BASE_ADDR)
@@ -146,13 +154,13 @@ class BiasBoard:
             write16(iox, p & 0xFF, (p & 0xFF00) >> 8)
         self.__end([iox])
 
-    def set_pot(self, pot=1, wiper=1, value=0):
+    def set_pot(self, pot: int, wiper: int, value: int = 0):
         """Sets a given digital pot, wiper to value
 
-        :param pot: Digital Pot (1 or 2), defaults to 1
-        :type pot: int, optional
-        :param wiper: Wiper number, defaults to 1
-        :type wiper: int, optional
+        :param pot: Digital Pot (1 or 2)
+        :type pot: int
+        :param wiper: Wiper number
+        :type wiper: int
         :param value: What value to set the wiper to (0-255), defaults to 0
         :type value: int, optional
         """
@@ -162,17 +170,36 @@ class BiasBoard:
         wiper = wiper - 1
 
         self.__start()
-        pot = None
         if pot == 2:
             pot = self.__get_fpot2()
+            self.pot2[wiper] = value
         else:
             pot = self.__get_fpot1()
+            self.pot1[wiper] = value
         write8(pot, AD5144_CMD_WRITE_RDAC + wiper, value)
         self.__end([pot])
 
+    def get_pot(self, pot, wiper) -> int:
+        """Gets a given digital pot value
+
+        :param pot: Digital Pot (1 or 2)
+        :type pot: int, optional
+        :param wiper: Wiper number
+        :type wiper: int, optional
+        :return: What the wiper value is (0-255)
+        :rtype: int
+        """
+        assert wiper > 0 and wiper <= 4, "Invalid wiper number (1-4)"
+        assert pot == 1 or pot == 2, "Only pot 1 or 2 exists in the system"
+        wiper = wiper - 1
+
+        if pot == 2:
+            return self.pot2[wiper]
+        else:
+            return self.pot1[wiper]
+
     def __set_pot_linear(self, pot=1, wiper=0, value=0):
         self.__start()
-        pot = None
         if pot == 2:
             pot = self.__get_fpot2()
         else:
@@ -266,38 +293,52 @@ class BiasBoard:
             val >> 3
         ) * 4  # Shift to the right 3 to drop CNVR and OVF and multiply by LSB
 
-    def get_shunt(self, chan: int) -> float:
-        """Reads a current monitor for it's shunt voltage for a given channel
+    def get_shunt(self, chan: int, navg: int = 6) -> float:
+        """Reads a current monitor for it's shunt voltage for a given channel.
 
         :param chan: Select the bias channel to measure (1 through 8)
         :type chan: int
+        :param navg: number of values to average, defaults to 6
+        :type navg: int, optional
         :return: shunt voltage in mV
         :rtype: float
         """
-        return 0.01 * self.__ina_getShuntVoltage_raw(chan)
+        val = np.zeros(navg)
+        for ind, _ in enumerate(val):
+            val[ind] = 0.01 * self.__ina_getShuntVoltage_raw(chan)
+        return np.average(val)
 
-    def get_bus(self, chan: int) -> float:
+    def get_bus(self, chan: int, navg: int = 6) -> float:
         """Reads a current monitor for it's bus voltage for a given channel
 
         :param chan: Select the bias channel to measure (1 through 8)
         :type chan: int
+        :param navg: number of values to average, defaults to 6
+        :type navg: int, optional
         :return: bus voltage in Volts
         :rtype: float
         """
-        value = self.__ina_getBusVoltage_raw(chan)
-        return value * 0.001
+        val = np.zeros(navg)
+        for ind, _ in enumerate(val):
+            val[ind] = self.__ina_getBusVoltage_raw(chan) * 0.001
+        return np.average(val)
 
-    def get_current(self, chan: int) -> float:
+    def get_current(self, chan: int, navg: int = 6) -> float:
         """Reads a current monitor for the bias's current draw for a given channel
 
         :param chan: Select the bias channel to measure (1 through 8)
         :type chan: int
+        :param navg: number of values to average, defaults to 6
+        :type navg: int, optional
         :return: Current in mA
         :rtype: float
         """
-        valueDec = self.__ina_getCurrent_raw(chan)
-        valueDec /= 10 * self.ina219_currentDivider_mA
-        return valueDec
+        val = np.zeros(navg)
+        for ind, _ in enumerate(val):
+            val[ind] = self.__ina_getCurrent_raw(chan) / (
+                10 * self.ina219_currentDivider_mA
+            )
+        return np.average(val)
 
 
 def test_bias_board(board: int):
