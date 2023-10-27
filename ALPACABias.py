@@ -1,9 +1,9 @@
 """
 :Authors: - Cody Roberson (carobers@asu.edu)
     - Eric Weeks
-:Date: 10/8/2023
+:Date: 10/27/2023
 :Copyright: 2023 Arizona State University
-:Version: 1.1
+:Version: 2.0
 
 Provides the end user with control over the LNA biases in the VME crate.
 The channel parameter of these functions should be 1 through 144 inclusively.
@@ -22,7 +22,7 @@ VTOLERANCE = 0.05  # %
 MAXITER = 256
 
 
-def iLNA(chan: int, set_current: float):
+def set_iLNA(chan: int, set_current: float):
     """Modifies V(out) until a desired set current is reached.
 
     :param chan: LNA channel (1 through 144)
@@ -34,6 +34,13 @@ def iLNA(chan: int, set_current: float):
     potnum = 1 if ch <= 4 else 2
     wipernum = ch if ch <= 4 else ch - 4
     wiperpos = bd.get_pot(potnum, wipernum)
+    if set_current == 0:
+        bd.set_ioexpander(ch, 0)
+        bd.set_pot(potnum, wipernum, 0)
+        return
+    else:
+        bd.set_ioexpander(ch, 1)
+
     while 1:
         if i > MAXITER:
             print(
@@ -41,22 +48,29 @@ def iLNA(chan: int, set_current: float):
             )
             break
         val = bd.get_current(ch)
+        if val >= 1000.0:
+            print("Error: Invalid value from INA, is the ")
         diff = abs(val - set_current) / set_current
+
+        print(f"iLNA={val} diff={diff} wiperpos={wiperpos}")
         if diff < ITOLERANCE:
             break
         elif val < set_current:
             if wiperpos >= 255:
+                print(f"Unable to reach {set_current}")
                 break
             wiperpos += 1
             bd.set_pot(potnum, wipernum, wiperpos)
         else:
             if wiperpos <= 0:
+                print(f"Unable to reach {set_current}")
                 break
             wiperpos -= 1
             bd.set_pot(potnum, wipernum, wiperpos)
+        i += 1
 
 
-def vLNA(chan: int, set_voltage: float):
+def set_vLNA(chan: int, set_voltage: float):
     """Modifies V(out) until a desired voltage is reached.
 
     :param chan: LNA channel (1 through 144)
@@ -68,6 +82,12 @@ def vLNA(chan: int, set_voltage: float):
     potnum = 1 if ch <= 4 else 2
     wipernum = ch if ch <= 4 else ch - 4
     wiperpos = bd.get_pot(potnum, wipernum)
+    if set_voltage == 0:
+        bd.set_ioexpander(ch, 0)
+        bd.set_pot(potnum, wipernum, 0)
+        return
+    else:
+        bd.set_ioexpander(ch, 1)
     while 1:
         if i > MAXITER:
             print(
@@ -76,18 +96,23 @@ def vLNA(chan: int, set_voltage: float):
             break
         val = bd.get_bus(ch)
         diff = abs(val - set_voltage) / set_voltage
+
+        print(f"vLNA={val} diff={diff} wiperpos={wiperpos}")
         if diff < VTOLERANCE:
             break
         elif val < set_voltage:
             if wiperpos >= 255:
+                print(f"Unable to reach {set_voltage}")
                 break
             wiperpos += 1
             bd.set_pot(potnum, wipernum, wiperpos)
         else:
             if wiperpos <= 0:
+                print(f"Unable to reach {set_voltage}")
                 break
             wiperpos -= 1
             bd.set_pot(potnum, wipernum, wiperpos)
+        i += 1
 
 
 def get_iLNA(chan: int):
@@ -103,7 +128,7 @@ def get_iLNA(chan: int):
 
 
 def get_vLNA(chan: int):
-    """Reads the voltage in volts for a given channel.
+    """Reads the (bus) voltage in volts for a given channel.
 
     :param chan: LNA channel (1 through 144)
     :type chan: int
@@ -133,5 +158,7 @@ def __getboard(channel: int) -> tuple[bc.BiasBoard, int]:
 
 __boards = []
 for i in range(1, 18 + 1):
+    print(f"Initializing Board {i}")
     b = bc.BiasBoard(i)
     __boards.append(b)
+cc

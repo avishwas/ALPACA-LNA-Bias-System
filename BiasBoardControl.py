@@ -1,9 +1,9 @@
 """
 :Authors: - Cody Roberson (carobers@asu.edu)
     - Eric Weeks
-:Date: 10/4/2023
+:Date: 10/27/2023
 :Copyright: 2023 Arizona State University
-:Version: 1.1
+:Version: 2.0
 
 Low level serial interface for interacting with the cards within the VME unit.
 **Users shouldn't need anything from this module.**
@@ -107,7 +107,7 @@ class BiasBoard:
         for j in range(1, 8 + 1):
             self.init_currsense(j)
             self.set_ioexpander(j, HIGH)
-            self.zero_pots()
+        self.zero_pots()
 
     def __get_fioexpander(self):
         return setup(BUS, PCF8575_BASE_ADDR)
@@ -120,7 +120,7 @@ class BiasBoard:
 
     def __get_fina(self, chan):
         assert chan > 0, "Channel can't be negative. (possible choices are 1-8)"
-        assert chan < 8, "Channel doesnt exist. (possible choices are 1-8)"
+        assert chan <= 8, "Channel doesnt exist. (possible choices are 1-8)"
         chan = chan - 1
         return setup(BUS, CURR_SENSE_BASE_I2C_ADDR + chan)
 
