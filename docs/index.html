@@ -4,18 +4,18 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to ALPACA LNA Bias System’s documentation! &mdash; ALPACA LNA Bias System 1.0 documentation</title>
+  <title>ASU ALPACA Bias Documentation &mdash; ALPACA LNA Bias System 1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -60,7 +60,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Welcome to ALPACA LNA Bias System’s documentation!</li>
+      <li class="breadcrumb-item active">ASU ALPACA Bias Documentation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -70,29 +70,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="welcome-to-alpaca-lna-bias-system-s-documentation">
-<h1>Welcome to ALPACA LNA Bias System’s documentation!<a class="headerlink" href="#welcome-to-alpaca-lna-bias-system-s-documentation" title="Permalink to this heading"></a></h1>
+  <section id="asu-alpaca-bias-documentation">
+<h1>ASU ALPACA Bias Documentation<a class="headerlink" href="#asu-alpaca-bias-documentation" title="Link to this heading"></a></h1>
 <section id="login">
-<h2>Login<a class="headerlink" href="#login" title="Permalink to this heading"></a></h2>
+<h2>Login<a class="headerlink" href="#login" title="Link to this heading"></a></h2>
 <p>The username is <strong>root</strong></p>
 <p>The password is <strong>odroid</strong></p>
 <p>User should take precautions such as changing the password and disabling ssh
 at the first opportunity.</p>
 </section>
-<section id="info">
-<h2>Info<a class="headerlink" href="#info" title="Permalink to this heading"></a></h2>
-<p>The code from this repository utilizes a python virtual environment located in the root home directory.
-The python packages may be installed on the system instead of the environment provided they use the requirements.txt
-file included.</p>
-<p>Using the environment:</p>
+<section id="intro">
+<h2>Intro<a class="headerlink" href="#intro" title="Link to this heading"></a></h2>
+<p>The code from this repository was developed using a python virtual environment located in the root home directory.
+The packages have since been installed outside of an environment. As a result, the user should not have to use the venv.
+It is however, still recommended.</p>
+<p>On import/run, the ALPACABias.py module automatically tries to initialize all of the boards in the system.
+During this process all of the bias outputs are set to their minimum.</p>
+<p>For details on usage or documentation, please see the API.</p>
+<p><strong>Please note that this module requires root access.</strong></p>
+</section>
+<section id="getting-updates">
+<h2>Getting Updates<a class="headerlink" href="#getting-updates" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>~/ALPACA-LNA-Bias-System<span class="p">;</span><span class="w"> </span>git<span class="w"> </span>pull<span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="using-ipython">
+<h2>Using ipython<a class="headerlink" href="#using-ipython" title="Link to this heading"></a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>~/py3/bin/activate<span class="p">;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>~/ALPACA-LNA-Bias-System<span class="p">;</span><span class="w"> </span>ipython<span class="p">;</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Bias</span>
-<span class="n">Bias</span><span class="o">.</span><span class="n">set_I</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">mA</span><span class="p">)</span>
-<span class="n">Bias</span><span class="o">.</span><span class="n">readV</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
-<span class="c1"># etc</span>
-<span class="c1"># etc</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">run</span> <span class="n">ALPACABias</span><span class="o">.</span><span class="n">py</span>
+<span class="n">set_iLNA</span><span class="p">(</span><span class="mi">23</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">)</span>
+<span class="n">set_iLNA</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">)</span>
+<span class="n">get_iLNA</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">get_vLNA</span><span class="p">(</span><span class="mi">144</span><span class="p">)</span>
+<span class="n">get_iLNA</span><span class="p">(</span><span class="mi">144</span><span class="p">)</span>
+<span class="c1"># etc, etc, etc</span>
 </pre></div>
 </div>
 <div class="toctree-wrapper compound">
@@ -108,7 +122,7 @@ file included.</p>
 </section>
 </section>
 <section id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h1>
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>

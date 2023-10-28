@@ -161,4 +161,3 @@ for i in range(1, 18 + 1):
     print(f"Initializing Board {i}")
     b = bc.BiasBoard(i)
     __boards.append(b)
-cc

@@ -10,11 +10,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -72,9 +72,9 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">:Authors: - Cody Roberson (carobers@asu.edu)</span>
 <span class="sd">    - Eric Weeks</span>
-<span class="sd">:Date: 10/4/2023</span>
+<span class="sd">:Date: 10/27/2023</span>
 <span class="sd">:Copyright: 2023 Arizona State University</span>
-<span class="sd">:Version: 1.1</span>
+<span class="sd">:Version: 2.0</span>
 
 <span class="sd">Low level serial interface for interacting with the cards within the VME unit.</span>
 <span class="sd">**Users shouldn&#39;t need anything from this module.**</span>
@@ -119,7 +119,9 @@
 <span class="n">INA219_REG_CURRENT</span> <span class="o">=</span> <span class="mh">0x04</span>
 
 
-<div class="viewcode-block" id="MSBF"><a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.MSBF">[docs]</a><span class="k">def</span> <span class="nf">MSBF</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="MSBF">
+<a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.MSBF">[docs]</a>
+<span class="k">def</span> <span class="nf">MSBF</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Swaps byte order of &#39;val&#39;. (needed for current sense chip)</span>
 
 <span class="sd">    :param val: 16-bit value</span>
@@ -128,6 +130,7 @@
 <span class="sd">    :rtype: int (unsigned)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">((</span><span class="n">val</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">|</span> <span class="p">((</span><span class="n">val</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">)</span></div>
+
 
 
 <span class="c1"># Hard Coded Config based off of Adafruit INA219 32V_2A</span>
@@ -146,7 +149,9 @@
 <span class="n">LOW</span> <span class="o">=</span> <span class="kc">False</span>
 
 
-<div class="viewcode-block" id="BiasBoard"><a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard">[docs]</a><span class="k">class</span> <span class="nc">BiasBoard</span><span class="p">:</span>
+<div class="viewcode-block" id="BiasBoard">
+<a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard">[docs]</a>
+<span class="k">class</span> <span class="nc">BiasBoard</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Creats a control interface for one of the bias boards for a given address in a given system.</span>
 
 <span class="sd">    .. Note::</span>
@@ -156,21 +161,48 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">pass</span>
+        <span class="c1"># Write the correct clockspeed</span>
+        <span class="k">assert</span> <span class="n">addr</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Invalid Bias Board Address (1 to 18)&quot;</span>
+        <span class="k">assert</span> <span class="n">addr</span> <span class="o">&lt;=</span> <span class="mi">18</span><span class="p">,</span> <span class="s2">&quot;Invalid Bias Board Address (1 to 18)&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="n">addr</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;/sys/bus/i2c/devices/i2c-0/device/speed&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">100_000</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;/sys/bus/i2c/devices/i2c-0/device/speed&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;100000&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pinstate</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pot1</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pot2</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+
+        <span class="c1"># Do startup procedure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zero_ioexpander</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_ioexpander</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_currsense</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_ioexpander</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zero_pots</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__get_fioexpander</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">setup</span><span class="p">(</span><span class="n">BUS</span><span class="p">,</span> <span class="n">PCF8575_BASE_ADDR</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__get_fpot1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">setup</span><span class="p">(</span><span class="n">BUS</span><span class="p">,</span> <span class="n">DIGITALPOT_1_I2C_ADDR</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__get_fpot2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">setup</span><span class="p">(</span><span class="n">BUS</span><span class="p">,</span> <span class="n">DIGITALPOT_2_I2C_ADDR</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__get_fina</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">):</span>
-        <span class="k">pass</span>
+        <span class="k">assert</span> <span class="n">chan</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Channel can&#39;t be negative. (possible choices are 1-8)&quot;</span>
+        <span class="k">assert</span> <span class="n">chan</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;Channel doesnt exist. (possible choices are 1-8)&quot;</span>
+        <span class="n">chan</span> <span class="o">=</span> <span class="n">chan</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">setup</span><span class="p">(</span><span class="n">BUS</span><span class="p">,</span> <span class="n">CURR_SENSE_BASE_I2C_ADDR</span> <span class="o">+</span> <span class="n">chan</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BiasBoard.set_ioexpander"><a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.set_ioexpander">[docs]</a>    <span class="k">def</span> <span class="nf">set_ioexpander</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">zero</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BiasBoard.set_ioexpander">
+<a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.set_ioexpander">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_ioexpander</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">zero</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set gpio pin high or low within a the bias board</span>
 
 <span class="sd">        :param pin: pin number (0 through 16)</span>
@@ -180,9 +212,26 @@
 <span class="sd">        :param zero: When set to true, sets all pins to 0</span>
 <span class="sd">        :type zero: bool, optional</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">assert</span> <span class="n">pin</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">pin</span> <span class="o">&lt;=</span> <span class="mi">16</span><span class="p">,</span> <span class="s2">&quot;Invalid pin, (0 - 16)&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__start</span><span class="p">()</span>
+        <span class="n">iox</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_fioexpander</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">zero</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pinstate</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">write16</span><span class="p">(</span><span class="n">iox</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pinstate</span>
+            <span class="k">if</span> <span class="n">state</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">p</span> <span class="o">|</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">pin</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">p</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">pin</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pinstate</span> <span class="o">=</span> <span class="n">p</span>
+            <span class="n">write16</span><span class="p">(</span><span class="n">iox</span><span class="p">,</span> <span class="n">p</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span> <span class="o">&amp;</span> <span class="mh">0xFF00</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__end</span><span class="p">([</span><span class="n">iox</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="BiasBoard.set_pot"><a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.set_pot">[docs]</a>    <span class="k">def</span> <span class="nf">set_pot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pot</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">wiper</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BiasBoard.set_pot">
+<a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.set_pot">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_pot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pot</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">wiper</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets a given digital pot, wiper to value</span>
 
 <span class="sd">        :param pot: Digital Pot (1 or 2)</span>
@@ -192,9 +241,25 @@
 <span class="sd">        :param value: What value to set the wiper to (0-255), defaults to 0</span>
 <span class="sd">        :type value: int, optional</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">assert</span> <span class="n">wiper</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">wiper</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;Invalid wiper number (1-4)&quot;</span>
+        <span class="k">assert</span> <span class="n">pot</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">pot</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Only pot 1 or 2 exists in the system&quot;</span>
+        <span class="k">assert</span> <span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">255</span><span class="p">,</span> <span class="s2">&quot;Acceptable values range 0 through 255&quot;</span>
+        <span class="n">wiper</span> <span class="o">=</span> <span class="n">wiper</span> <span class="o">-</span> <span class="mi">1</span>
 
-<div class="viewcode-block" id="BiasBoard.get_pot"><a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.get_pot">[docs]</a>    <span class="k">def</span> <span class="nf">get_pot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pot</span><span class="p">,</span> <span class="n">wiper</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__start</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">pot</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">pot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_fpot2</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pot2</span><span class="p">[</span><span class="n">wiper</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_fpot1</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pot1</span><span class="p">[</span><span class="n">wiper</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">write8</span><span class="p">(</span><span class="n">pot</span><span class="p">,</span> <span class="n">AD5144_CMD_WRITE_RDAC</span> <span class="o">+</span> <span class="n">wiper</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__end</span><span class="p">([</span><span class="n">pot</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="BiasBoard.get_pot">
+<a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.get_pot">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_pot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pot</span><span class="p">,</span> <span class="n">wiper</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets a given digital pot value</span>
 
 <span class="sd">        :param pot: Digital Pot (1 or 2)</span>
@@ -204,32 +269,65 @@
 <span class="sd">        :return: What the wiper value is (0-255)</span>
 <span class="sd">        :rtype: int</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">assert</span> <span class="n">wiper</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">wiper</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;Invalid wiper number (1-4)&quot;</span>
+        <span class="k">assert</span> <span class="n">pot</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">pot</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Only pot 1 or 2 exists in the system&quot;</span>
+        <span class="n">wiper</span> <span class="o">=</span> <span class="n">wiper</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">pot</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pot2</span><span class="p">[</span><span class="n">wiper</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pot1</span><span class="p">[</span><span class="n">wiper</span><span class="p">]</span></div>
+
 
     <span class="k">def</span> <span class="nf">__set_pot_linear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">wiper</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__start</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">pot</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">pot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_fpot2</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_fpot1</span><span class="p">()</span>
+        <span class="n">write16</span><span class="p">(</span><span class="n">pot</span><span class="p">,</span> <span class="mb">0b1101000</span><span class="p">,</span> <span class="mb">0b00001110</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__end</span><span class="p">([</span><span class="n">pot</span><span class="p">])</span>
 
-<div class="viewcode-block" id="BiasBoard.zero_pots"><a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.zero_pots">[docs]</a>    <span class="k">def</span> <span class="nf">zero_pots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BiasBoard.zero_pots">
+<a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.zero_pots">[docs]</a>
+    <span class="k">def</span> <span class="nf">zero_pots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets all of the Digital Pots on the Board to 0&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_pot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_pot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_pot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_pot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_pot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_pot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_pot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_pot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BiasBoard.zero_ioexpander"><a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.zero_ioexpander">[docs]</a>    <span class="k">def</span> <span class="nf">zero_ioexpander</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BiasBoard.zero_ioexpander">
+<a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.zero_ioexpander">[docs]</a>
+    <span class="k">def</span> <span class="nf">zero_ioexpander</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets all of the pins on the internal io-expander to 0&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_ioexpander</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">__start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Used to prepare controller &lt;-&gt; board connection by instructing the board&#39;s i2c repeater</span>
 <span class="sd">        to connect our respective busses.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frptr</span> <span class="o">=</span> <span class="n">setup</span><span class="p">(</span><span class="n">BUS</span><span class="p">,</span> <span class="n">LTC4302_BASE_ADDR</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="p">)</span>
+        <span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frptr</span><span class="p">,</span> <span class="n">INSTR_LTCCONNECT</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">devices</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Used to close controller &lt;-&gt; board connection by instructing a i2c repeater</span>
 <span class="sd">        to disconnect our i2c bus to the board&#39;s bus.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
+            <span class="n">close</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frptr</span><span class="p">,</span> <span class="n">INSTR_LTCDISCONNECT</span><span class="p">)</span>
+        <span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frptr</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BiasBoard.init_currsense"><a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.init_currsense">[docs]</a>    <span class="k">def</span> <span class="nf">init_currsense</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">currentDivider</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="BiasBoard.init_currsense">
+<a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.init_currsense">[docs]</a>
+    <span class="k">def</span> <span class="nf">init_currsense</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">currentDivider</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes an INA219 current sense chip for a given channel</span>
 
 <span class="sd">        Code ripped from https://github.com/adafruit/Adafruit_INA219/blob/master/Adafruit_INA219.cpp</span>
@@ -239,21 +337,55 @@
 <span class="sd">        :param currentDivider: useful for cases where sense resistors have been modified, defaults to 2.0</span>
 <span class="sd">        :type currentDivider: float, optional</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__start</span><span class="p">()</span>
+        <span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fina</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_fina</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ina219_currentDivider_mA</span> <span class="o">=</span> <span class="n">currentDivider</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ina219_powerMultiplier_mW</span> <span class="o">=</span> <span class="mi">2</span>
+
+        <span class="c1"># Set Calibration register to &#39;Cal&#39; calculated above</span>
+        <span class="n">write16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fina</span><span class="p">,</span> <span class="n">INA219_REG_CALIBRATION</span><span class="p">,</span> <span class="n">INACALVALUE</span><span class="p">)</span>
+        <span class="n">write16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fina</span><span class="p">,</span> <span class="n">INA219_REG_CONFIG</span><span class="p">,</span> <span class="n">INA219CONFIG</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__end</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">fina</span><span class="p">])</span></div>
+
 
     <span class="k">def</span> <span class="nf">__ina_getCurrent_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">):</span>
-        <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__start</span><span class="p">()</span>
+        <span class="n">ina</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_fina</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+        <span class="n">write16</span><span class="p">(</span><span class="n">ina</span><span class="p">,</span> <span class="n">INA219_REG_CALIBRATION</span><span class="p">,</span> <span class="n">INACALVALUE</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">MSBF</span><span class="p">(</span><span class="n">read16</span><span class="p">(</span><span class="n">ina</span><span class="p">,</span> <span class="n">INA219_REG_CURRENT</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__end</span><span class="p">([</span><span class="n">ina</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">val</span>
 
     <span class="k">def</span> <span class="nf">__ina_getPower_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">):</span>
-        <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__start</span><span class="p">()</span>
+        <span class="n">ina</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_fina</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+        <span class="n">write16</span><span class="p">(</span><span class="n">ina</span><span class="p">,</span> <span class="n">INA219_REG_CALIBRATION</span><span class="p">,</span> <span class="n">INACALVALUE</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">MSBF</span><span class="p">(</span><span class="n">read16</span><span class="p">(</span><span class="n">ina</span><span class="p">,</span> <span class="n">INA219_REG_POWER</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__end</span><span class="p">([</span><span class="n">ina</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">val</span>
 
     <span class="k">def</span> <span class="nf">__ina_getShuntVoltage_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">):</span>
-        <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__start</span><span class="p">()</span>
+        <span class="n">ina</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_fina</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">MSBF</span><span class="p">(</span><span class="n">read16</span><span class="p">(</span><span class="n">ina</span><span class="p">,</span> <span class="n">INA219_REG_SHUNTVOLTAGE</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__end</span><span class="p">([</span><span class="n">ina</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">val</span>
 
     <span class="k">def</span> <span class="nf">__ina_getBusVoltage_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">):</span>
-        <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__start</span><span class="p">()</span>
+        <span class="n">ina</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_fina</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+        <span class="n">write16</span><span class="p">(</span><span class="n">ina</span><span class="p">,</span> <span class="n">INA219_REG_CALIBRATION</span><span class="p">,</span> <span class="n">INACALVALUE</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">MSBF</span><span class="p">(</span><span class="n">read16</span><span class="p">(</span><span class="n">ina</span><span class="p">,</span> <span class="n">INA219_REG_BUSVOLTAGE</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__end</span><span class="p">([</span><span class="n">ina</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">val</span> <span class="o">&gt;&gt;</span> <span class="mi">3</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="mi">4</span>  <span class="c1"># Shift to the right 3 to drop CNVR and OVF and multiply by LSB</span>
 
-<div class="viewcode-block" id="BiasBoard.get_shunt"><a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.get_shunt">[docs]</a>    <span class="k">def</span> <span class="nf">get_shunt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">navg</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="BiasBoard.get_shunt">
+<a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.get_shunt">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_shunt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">navg</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reads a current monitor for it&#39;s shunt voltage for a given channel.</span>
 
 <span class="sd">        :param chan: Select the bias channel to measure (1 through 8)</span>
@@ -263,9 +395,15 @@
 <span class="sd">        :return: shunt voltage in mV</span>
 <span class="sd">        :rtype: float</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">navg</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+            <span class="n">val</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ina_getShuntVoltage_raw</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BiasBoard.get_bus"><a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.get_bus">[docs]</a>    <span class="k">def</span> <span class="nf">get_bus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">navg</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<div class="viewcode-block" id="BiasBoard.get_bus">
+<a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.get_bus">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_bus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">navg</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reads a current monitor for it&#39;s bus voltage for a given channel</span>
 
 <span class="sd">        :param chan: Select the bias channel to measure (1 through 8)</span>
@@ -275,9 +413,15 @@
 <span class="sd">        :return: bus voltage in Volts</span>
 <span class="sd">        :rtype: float</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">navg</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+            <span class="n">val</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ina_getBusVoltage_raw</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.001</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BiasBoard.get_current"><a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.get_current">[docs]</a>    <span class="k">def</span> <span class="nf">get_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">navg</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<div class="viewcode-block" id="BiasBoard.get_current">
+<a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.BiasBoard.get_current">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">navg</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reads a current monitor for the bias&#39;s current draw for a given channel</span>
 
 <span class="sd">        :param chan: Select the bias channel to measure (1 through 8)</span>
@@ -287,10 +431,19 @@
 <span class="sd">        :return: Current in mA</span>
 <span class="sd">        :rtype: float</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div></div>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">navg</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+            <span class="n">val</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ina_getCurrent_raw</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="mi">10</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ina219_currentDivider_mA</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="test_bias_board"><a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.test_bias_board">[docs]</a><span class="k">def</span> <span class="nf">test_bias_board</span><span class="p">(</span><span class="n">board</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+
+<div class="viewcode-block" id="test_bias_board">
+<a class="viewcode-back" href="../BiasBoardControl.html#BiasBoardControl.test_bias_board">[docs]</a>
+<span class="k">def</span> <span class="nf">test_bias_board</span><span class="p">(</span><span class="n">board</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;BIAS BOARD TEST ROUTINE.</span>
 
 <span class="sd">    .. DANGER ::</span>
@@ -307,7 +460,52 @@
 <span class="sd">        #. reads current, shunt, and bus</span>
 <span class="sd">        #. repeat procedure for next channel</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">BiasBoard</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Setting all expanders to 0 for board </span><span class="si">{</span><span class="n">board</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">zero_ioexpander</span><span class="p">()</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">set_ioexpander</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;press enter to enable regulator for channel </span><span class="si">{</span><span class="n">chan</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">set_ioexpander</span><span class="p">(</span><span class="n">chan</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">)</span>
+        <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;press enter to initialize the current sense chip for channel </span><span class="si">{</span><span class="n">chan</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">b</span><span class="o">.</span><span class="n">init_currsense</span><span class="p">(</span><span class="n">chan</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+        <span class="n">pot</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">chan</span> <span class="o">&lt;=</span> <span class="mi">4</span> <span class="k">else</span> <span class="mi">2</span>
+        <span class="n">wiper</span> <span class="o">=</span> <span class="n">chan</span> <span class="o">-</span> <span class="mi">5</span> <span class="k">if</span> <span class="n">chan</span> <span class="o">&gt;</span> <span class="mi">4</span> <span class="k">else</span> <span class="n">chan</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;press enter to set pot </span><span class="si">{</span><span class="n">pot</span><span class="si">}</span><span class="s2">;wiper </span><span class="si">{</span><span class="n">wiper</span><span class="si">}</span><span class="s2">; for </span><span class="si">{</span><span class="n">chan</span><span class="si">}</span><span class="s2"> to 0&quot;</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">set_pot</span><span class="p">(</span><span class="n">pot</span><span class="p">,</span> <span class="n">wiper</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="nb">input</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;press enter to enable take a current, bus, and shunt measurement for channel </span><span class="si">{</span><span class="n">chan</span><span class="si">}</span><span class="s2"> at wiper=0&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">current </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">get_current</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span><span class="si">}</span><span class="se">\n\t</span><span class="s2">shunt </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">get_shunt</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span><span class="si">}</span><span class="se">\n\t</span><span class="s2">bus </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">get_bus</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;press enter to set pot </span><span class="si">{</span><span class="n">pot</span><span class="si">}</span><span class="s2">;wiper </span><span class="si">{</span><span class="n">wiper</span><span class="si">}</span><span class="s2">; for </span><span class="si">{</span><span class="n">chan</span><span class="si">}</span><span class="s2"> to 100&quot;</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">set_pot</span><span class="p">(</span><span class="n">pot</span><span class="p">,</span> <span class="n">wiper</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+        <span class="nb">input</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;press enter to enable take a current, bus, and shunt measurement for channel </span><span class="si">{</span><span class="n">chan</span><span class="si">}</span><span class="s2"> at wiper=100&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">current </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">get_current</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span><span class="si">}</span><span class="se">\n\t</span><span class="s2">shunt </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">get_shunt</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span><span class="si">}</span><span class="se">\n\t</span><span class="s2">bus </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">get_bus</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;press enter to set pot </span><span class="si">{</span><span class="n">pot</span><span class="si">}</span><span class="s2">;wiper </span><span class="si">{</span><span class="n">wiper</span><span class="si">}</span><span class="s2">; for </span><span class="si">{</span><span class="n">chan</span><span class="si">}</span><span class="s2"> to 200&quot;</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">set_pot</span><span class="p">(</span><span class="n">pot</span><span class="p">,</span> <span class="n">wiper</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="nb">input</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;press enter to enable take a current, bus, and shunt measurement for channel </span><span class="si">{</span><span class="n">chan</span><span class="si">}</span><span class="s2"> at wiper=200&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">current </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">get_current</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span><span class="si">}</span><span class="se">\n\t</span><span class="s2">shunt </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">get_shunt</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span><span class="si">}</span><span class="se">\n\t</span><span class="s2">bus </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">get_bus</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>
