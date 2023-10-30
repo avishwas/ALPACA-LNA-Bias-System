@@ -31,6 +31,7 @@ def set_iLNA(chan: int, set_current: float):
     :type set_current: float
     """
     bd, ch = __getboard(chan)
+    i = 0
     potnum = 1 if ch <= 4 else 2
     wipernum = ch if ch <= 4 else ch - 4
     wiperpos = bd.get_pot(potnum, wipernum)
@@ -79,6 +80,7 @@ def set_vLNA(chan: int, set_voltage: float):
     :param set_voltage: Desired voltage (Volts)
     :type set_voltage: float
     """
+    i = 0
     bd, ch = __getboard(chan)
     potnum = 1 if ch <= 4 else 2
     wipernum = ch if ch <= 4 else ch - 4
