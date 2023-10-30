@@ -49,7 +49,8 @@ def set_iLNA(chan: int, set_current: float):
             break
         val = bd.get_current(ch)
         if val >= 1000.0:
-            print("Error: Invalid value from INA, is the ")
+            print("Error: Invalid value from INA, is the LNA connected?")
+            return
         diff = abs(val - set_current) / set_current
 
         print(f"iLNA={val} diff={diff} wiperpos={wiperpos}")
@@ -57,13 +58,13 @@ def set_iLNA(chan: int, set_current: float):
             break
         elif val < set_current:
             if wiperpos >= 255:
-                print(f"Unable to reach {set_current}")
+                print(f"Unable to reach {set_current} mA")
                 break
             wiperpos += 1
             bd.set_pot(potnum, wipernum, wiperpos)
         else:
             if wiperpos <= 0:
-                print(f"Unable to reach {set_current}")
+                print(f"Unable to reach {set_current} mA")
                 break
             wiperpos -= 1
             bd.set_pot(potnum, wipernum, wiperpos)
@@ -95,6 +96,9 @@ def set_vLNA(chan: int, set_voltage: float):
             )
             break
         val = bd.get_bus(ch)
+        if val >= 3.0:
+            print("Error: Invalid value from INA, is the LNA connected or the Bias Board Damaged?")
+            return
         diff = abs(val - set_voltage) / set_voltage
 
         print(f"vLNA={val} diff={diff} wiperpos={wiperpos}")
@@ -102,13 +106,13 @@ def set_vLNA(chan: int, set_voltage: float):
             break
         elif val < set_voltage:
             if wiperpos >= 255:
-                print(f"Unable to reach {set_voltage}")
+                print(f"Unable to reach {set_voltage} V")
                 break
             wiperpos += 1
             bd.set_pot(potnum, wipernum, wiperpos)
         else:
             if wiperpos <= 0:
-                print(f"Unable to reach {set_voltage}")
+                print(f"Unable to reach {set_voltage} V")
                 break
             wiperpos -= 1
             bd.set_pot(potnum, wipernum, wiperpos)
