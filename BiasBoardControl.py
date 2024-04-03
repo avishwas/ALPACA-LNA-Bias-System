@@ -1,9 +1,12 @@
 """
 :Authors: - Cody Roberson (carobers@asu.edu)
     - Eric Weeks
-:Date: 10/27/2023
+:Date: 4/3/2024
 :Copyright: 2023 Arizona State University
-:Version: 2.0
+:Version: 2.0.1
+
+:revision:
+    2.0.1 - Cody Roberson - broke out the ability to control current sense divider
 
 Low level serial interface for interacting with the cards within the VME unit.
 **Users shouldn't need anything from this module.**
@@ -20,7 +23,7 @@ from odroid_wiringpi import serialClose as close
 from time import sleep
 import numpy as np
 
-__VERSION__ = 1.0
+__VERSION__ = "2.0.1"
 
 # DEVICE INSTRUCTIONS
 INSTR_LTCCONNECT = 0b11100000
@@ -82,9 +85,10 @@ class BiasBoard:
         This library modifies the I2C Clock from the default 400 KHz to 100KHz
 
     :param addr: Bias board address within VME crate. (1 to 18).
+    :param curr_divider: Current divider for the INA219 current sense chip. (default 2.0)
     """
 
-    def __init__(self, addr: int) -> None:
+    def __init__(self, addr: int, curr_divider: float = 2.0) -> None:
         # Write the correct clockspeed
         assert addr >= 1, "Invalid Bias Board Address (1 to 18)"
         assert addr <= 18, "Invalid Bias Board Address (1 to 18)"
@@ -105,7 +109,7 @@ class BiasBoard:
         self.zero_ioexpander()
         self.set_ioexpander(0, HIGH)
         for j in range(1, 8 + 1):
-            self.init_currsense(j)
+            self.init_currsense(j, curr_divider)
             self.set_ioexpander(j, HIGH)
         self.zero_pots()
 
