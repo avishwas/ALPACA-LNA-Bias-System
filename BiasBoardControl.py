@@ -7,11 +7,16 @@
 
 :revision:
     2.0.1 - Cody Roberson - broke out the ability to control current sense divider
-
+    2.1.0 - Amit Vishwas - attempt stateless comms through writing biasboard states to json
+    
 Low level serial interface for interacting with the cards within the VME unit.
 **Users shouldn't need anything from this module.**
 
 """
+import json
+import os
+import threading
+
 from odroid_wiringpi import wiringPiI2CSetupInterface as setup
 from odroid_wiringpi import wiringPiI2CWrite as write
 from odroid_wiringpi import wiringPiI2CRead as read
@@ -23,7 +28,7 @@ from odroid_wiringpi import serialClose as close
 from time import sleep
 import numpy as np
 
-__VERSION__ = "2.0.1"
+__VERSION__ = "2.1.0"
 
 # DEVICE INSTRUCTIONS
 INSTR_LTCCONNECT = 0b11100000
@@ -87,12 +92,14 @@ class BiasBoard:
     :param addr: Bias board address within VME crate. (1 to 18).
     :param curr_divider: Current divider for the INA219 current sense chip. (default 2.0)
     """
+    state_lock = threading.Lock()  # Class-level lock for thread-safe access
+    state_file = "bias_board_state.json"  # JSON file for saving state
 
     def __init__(self, addr: int, curr_divider: float = 2.0) -> None:
         # Write the correct clockspeed
         assert addr >= 1, "Invalid Bias Board Address (1 to 18)"
         assert addr <= 18, "Invalid Bias Board Address (1 to 18)"
-        self.addr = addr
+        
         f = open("/sys/bus/i2c/devices/i2c-0/device/speed", "r")
         if int(f.readline()) != 100_000:
             f.close()
@@ -101,6 +108,9 @@ class BiasBoard:
             f.close()
         else:
             f.close()
+        
+        self.addr = addr
+        self.curr_divider = curr_divider
         self.pinstate = 0
         self.pot1 = [0.0, 0.0, 0.0, 0.0]
         self.pot2 = [0.0, 0.0, 0.0, 0.0]
@@ -112,6 +122,49 @@ class BiasBoard:
             self.init_currsense(j, curr_divider)
             self.set_ioexpander(j, HIGH)
         self.zero_pots()
+
+    def to_dict(self):
+        """Serialize the state of the BiasBoard."""
+        return {
+            "addr": self.addr,
+            "curr_divider": self.curr_divider,
+            "pinstate": self.pinstate,
+            "pot1": self.pot1,
+            "pot2": self.pot2,
+        }
+
+    def from_dict(self, state):
+        """Restore the BiasBoard state from a dictionary."""
+        self.addr = state["addr"]
+        self.curr_divider = state["curr_divider"]
+        self.pinstate = state["pinstate"]
+        self.pot1 = state["pot1"]
+        self.pot2 = state["pot2"]
+
+    @classmethod
+    def save_all_states(cls, boards):
+        """Save the state of all BiasBoards to a JSON file."""
+        with cls.state_lock:
+            state = [board.to_dict() for board in boards]
+            with open(cls.state_file, "w") as f:
+                json.dump(state, f, indent=4)
+            print("State saved successfully.")
+
+    @classmethod
+    def load_all_states(cls):
+        """Load the state of all BiasBoards from a JSON file."""
+        if not os.path.exists(cls.state_file):
+            print("State file not found. Initializing new boards.")
+            return []
+
+        with cls.state_lock:
+            with open(cls.state_file, "r") as f:
+                state = json.load(f)
+            print("State loaded successfully.")
+            boards = [BiasBoard(0) for _ in state]  # Create empty boards
+            for board, board_state in zip(boards, state):
+                board.from_dict(board_state)
+            return boards
 
     def __get_fioexpander(self):
         return setup(BUS, PCF8575_BASE_ADDR)
@@ -153,6 +206,9 @@ class BiasBoard:
             self.pinstate = p
             write16(iox, p & 0xFF, (p & 0xFF00) >> 8)
         self.__end([iox])
+        
+        # Save state
+        BiasBoard.save_all_states([self])
 
     def set_pot(self, pot: int, wiper: int, value: int = 0):
         """Sets a given digital pot, wiper to value
@@ -178,6 +234,9 @@ class BiasBoard:
             self.pot1[wiper] = value
         write8(pot, AD5144_CMD_WRITE_RDAC + wiper, value)
         self.__end([pot])
+
+         # Save state
+        BiasBoard.save_all_states([self])
 
     def get_pot(self, pot, wiper) -> int:
         """Gets a given digital pot value
