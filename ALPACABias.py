@@ -1,9 +1,11 @@
 """
 :Authors: - Cody Roberson (carobers@asu.edu)
     - Eric Weeks
-:Date: 10/27/2023
+:Date: 4/3/2024
 :Copyright: 2023 Arizona State University
-:Version: 2.0
+:Version: 2.0.1
+:Revision: 
+    2.0.1 - Cody Roberson - Added ability to set current divider value for INA219
 
 Provides the end user with control over the LNA biases in the VME crate.
 The channel parameter of these functions should be 1 through 144 inclusively.
@@ -21,6 +23,7 @@ VTOLERANCE = 0.05  # %
 
 MAXITER = 256
 
+CURRENT_DIVIDER = 2.7 # Default current divider value for INA219
 
 def set_iLNA(chan: int, set_current: float):
     """Modifies V(out) until a desired set current is reached.
@@ -165,5 +168,5 @@ def __getboard(channel: int) -> tuple[bc.BiasBoard, int]:
 __boards = []
 for i in range(1, 18 + 1):
     print(f"Initializing Board {i}")
-    b = bc.BiasBoard(i)
+    b = bc.BiasBoard(i, CURRENT_DIVIDER)
     __boards.append(b)
