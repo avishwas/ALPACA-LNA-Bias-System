@@ -6,6 +6,7 @@
 :Version: 2.0.1
 :Revision: 
     2.0.1 - Cody Roberson - Added ability to set current divider value for INA219
+    2.1.0 - Amit Vishwas - Adding stateless comms functionality using local json files
 
 Provides the end user with control over the LNA biases in the VME crate.
 The channel parameter of these functions should be 1 through 144 inclusively.
@@ -25,6 +26,27 @@ MAXITER = 256
 
 CURRENT_DIVIDER = 2.7 # Default current divider value for INA219
 
+def initialize_boards():
+    """Initializes all bias boards and loads saved state if available."""
+    try:
+        boards = bc.BiasBoard.load_all_states()
+        if not boards:
+            # Initialize new boards if no saved state is found
+            boards = [bc.BiasBoard(addr, CURRENT_DIVIDER) for addr in range(1, 19)]
+            print("All 18 boards have been successfully initialized.")
+        else:
+            print("All 18 boards have been successfully retrieved from memory.")
+        return boards
+    except Exception as e:
+        print(f"Error initializing or retrieving boards: {e}")
+        return []
+
+
+def save_boards_state(boards):
+    """Saves the state of all bias boards."""
+    bc.BiasBoard.save_all_states(boards)
+
+
 def set_iLNA(chan: int, set_current: float):
     """Modifies V(out) until a desired set current is reached.
 
@@ -33,7 +55,10 @@ def set_iLNA(chan: int, set_current: float):
     :param set_current: Desired current in mA
     :type set_current: float
     """
-    bd, ch = __getboard(chan)
+    boards = initialize_boards()
+    bd, ch = __getboard(chan, boards)
+#    bd, ch = __getboard(chan)
+
     i = 0
     potnum = 1 if ch <= 4 else 2
     wipernum = ch if ch <= 4 else ch - 4
@@ -41,6 +66,7 @@ def set_iLNA(chan: int, set_current: float):
     if set_current == 0:
         bd.set_ioexpander(ch, 0)
         bd.set_pot(potnum, wipernum, 0)
+        save_boards_state(boards)
         return
     else:
         bd.set_ioexpander(ch, 1)
@@ -73,6 +99,8 @@ def set_iLNA(chan: int, set_current: float):
             wiperpos -= 1
             bd.set_pot(potnum, wipernum, wiperpos)
         i += 1
+      
+    save_boards_state(boards)
 
 
 def set_vLNA(chan: int, set_voltage: float):
@@ -83,14 +111,19 @@ def set_vLNA(chan: int, set_voltage: float):
     :param set_voltage: Desired voltage (Volts)
     :type set_voltage: float
     """
+    boards = initialize_boards()
+    bd, ch = __getboard(chan, boards)
+    
     i = 0
-    bd, ch = __getboard(chan)
+#    bd, ch = __getboard(chan)
     potnum = 1 if ch <= 4 else 2
     wipernum = ch if ch <= 4 else ch - 4
     wiperpos = bd.get_pot(potnum, wipernum)
+    
     if set_voltage == 0:
         bd.set_ioexpander(ch, 0)
         bd.set_pot(potnum, wipernum, 0)
+        save_boards_state(boards)
         return
     else:
         bd.set_ioexpander(ch, 1)
@@ -122,6 +155,8 @@ def set_vLNA(chan: int, set_voltage: float):
             wiperpos -= 1
             bd.set_pot(potnum, wipernum, wiperpos)
         i += 1
+      
+    save_boards_state(boards)
 
 
 def get_iLNA(chan: int):
@@ -148,7 +183,8 @@ def get_vLNA(chan: int):
     return bd.get_bus(ch)
 
 
-def __getboard(channel: int) -> tuple[bc.BiasBoard, int]:
+#def __getboard(channel: int) -> tuple[bc.BiasBoard, int]:
+def __getboard(channel: int, boards):
     """Converts a provided channel number into a bias board
     and channel relative to the board
 
@@ -162,11 +198,12 @@ def __getboard(channel: int) -> tuple[bc.BiasBoard, int]:
     ), "Channel must be in range 1 to 144 inclusive"
     boardnum = math.ceil(channel / 8)
     boardchan = ((channel - 1) % 8) + 1
-    return (__boards[boardnum - 1], boardchan)
+    return boards[boardnum - 1], boardchan)
 
 
-__boards = []
-for i in range(1, 18 + 1):
-    print(f"Initializing Board {i}")
-    b = bc.BiasBoard(i, CURRENT_DIVIDER)
-    __boards.append(b)
+boards = initialize_boards()
+#__boards = []
+#for i in range(1, 18 + 1):
+#    print(f"Initializing Board {i}")
+#    b = bc.BiasBoard(i, CURRENT_DIVIDER)
+#    __boards.append(b)
