@@ -4,8 +4,9 @@
 </p>
 ___
 ## Stateles-comms Branch
-Added logic to store the state in a file on disk to restore after power cycle
-
+Added logic to store the bias board configuration in a 'state file' (bias_board_state.json) on disk to restore after power cycle/comms break
+BiasBoardControl.py: implemented class methods - save_all_states and load_all_states
+ALPACABias.py: method save_boards_state calls BC.save_all_states to update the state file on every write operation
 ___
 ## General Information
 This repository contains the documentation and software for the VME cards designed for the Series 2151 VME backplane / enclosure. This repo shall be made available to our collaborators.
