@@ -2,7 +2,8 @@
 <p style="text-align: center" align="center">
 <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
-___
+
+<hr>
 ## Stateles-comms Branch
 Added logic to store the bias board configuration in a 'state file' (bias_board_state.json) on disk to restore after power cycle/comms break
 BiasBoardControl.py: implemented class methods - save_all_states and load_all_states
